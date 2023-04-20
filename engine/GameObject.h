@@ -10,7 +10,7 @@
 
 class GameObject {
 	public:
-		GameObject();
+		GameObject(GLuint programID);
 		virtual ~GameObject();
 		virtual void update() = 0;
 		virtual void render() = 0;
