@@ -61,6 +61,11 @@ add_executable(playground
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
 	common/shader.hpp
+	engine/GameObject.h
+	engine/GameObject.cpp
+	engine/tank.cpp
+	engine/tank.h
+
 )
 target_link_libraries(playground
 	${ALL_LIBS}
