@@ -7,6 +7,7 @@
 
 // std includes
 #include <string>
+#include <vector>
 
 class GameObject {
 	public:
@@ -20,7 +21,7 @@ class GameObject {
 		glm::vec3 rotation;
 		glm::vec3 scale;
 		GLuint programID;
-		void parseStl(std::string path);
+		void parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::vec3 >& normals, std::string stl_file_name);
 		virtual void inializeBuffers() = 0;
 		virtual void cleanupBuffers() = 0;
 		
