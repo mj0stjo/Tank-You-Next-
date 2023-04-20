@@ -57,6 +57,7 @@ add_definitions(
 add_executable(playground 
 	playground/playground.cpp
 	playground/playground.h
+	playground/websocket.cpp
 	playground/SimpleFragmentShader.fragmentshader
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
@@ -84,3 +85,7 @@ elseif (${CMAKE_GENERATOR} MATCHES "Xcode" )
 
 endif (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 
+
+# Include Boost
+
+include_directories("boost")
