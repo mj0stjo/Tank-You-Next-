@@ -65,6 +65,8 @@ add_executable(playground
 	engine/GameObject.cpp
 	engine/tank.cpp
 	engine/tank.h
+	engine/parse_stl.cpp
+	engine/parse_stl.h
 
 )
 target_link_libraries(playground
