@@ -68,6 +68,8 @@ add_executable(playground
 	engine/parse_stl.cpp
 	engine/parse_stl.h
 	models/monke.stl
+	models/bunny-decimated.stl
+	models/tank.stl
 
 )
 target_link_libraries(playground

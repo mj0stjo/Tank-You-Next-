@@ -10,9 +10,18 @@ GLFWwindow* window;
 
 // Include GLM
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
 #include <common/shader.hpp>
+
+#include <vector>
+#include <memory>
+
+#include "engine/GameObject.h"
+#include "engine/Tank.h"
+
+std::vector<std::shared_ptr<GameObject>> gameObjects;
 
 int main( void )
 {
@@ -20,14 +29,17 @@ int main( void )
   bool windowInitialized = initializeWindow();
   if (!windowInitialized) return -1;
 
-  //Initialize vertex buffer
-  bool vertexbufferInitialized = initializeVertexbuffer();
-  if (!vertexbufferInitialized) return -1;
+  initalizeVPTransformation();
+
+  // Add depth buffer
+  glEnable(GL_DEPTH_TEST);
 
   // Create and compile our GLSL program from the shaders
   programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 
-	//start animation loop until escape key is pressed
+  std::shared_ptr<GameObject> monkePtr = std::make_shared<Tank>(programID, "../models/tank.stl");
+  gameObjects.push_back(monkePtr);
+  //start animation loop until escape key is pressed
 	do{
 
     updateAnimationLoop();
@@ -48,27 +60,22 @@ int main( void )
 void updateAnimationLoop()
 {
   // Clear the screen
-  glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Use our shader
   glUseProgram(programID);
 
-  // 1rst attribute buffer : vertices
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glVertexAttribPointer(
-    0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-    3,  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset
-  );
 
-  // Draw the triangle !
-  glDrawArrays(GL_TRIANGLES, 0, vertexbuffer_size); // 3 indices starting at 0 -> 1 triangle
+  for (int i = 0; i < gameObjects.size(); i++) {
+      gameObjects.at(i)->update();
+  }
 
+
+  initalizeVPTransformation();
+
+ 
   glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
 
   // Swap buffers
   glfwSwapBuffers(window);
@@ -118,24 +125,24 @@ bool initializeWindow()
   return true;
 }
 
-bool initializeVertexbuffer()
-{
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
+void initalizeVPTransformation() {
 
-  vertexbuffer_size = 3;
-  static const GLfloat g_vertex_buffer_data[] = {
-    -1.0f, -1.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,
-    0.0f,  1.0f, 0.0f,
-  };
-
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-  return true;
+    GLuint viewMatrixID = glGetUniformLocation(programID, "view");
+    GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
+    
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 500.0f);
+    
+    glm::vec3 cameraPos = glm::vec3(200, 20, 0);
+    glm::mat4 viewMatrix = glm::lookAt(
+        cameraPos,
+        glm::vec3(0, 0, 0),
+        glm::vec3(0, 1, 0)
+    );
+    
+    glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
+    glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &projectionMatrix[0][0]);
 }
+
 
 bool cleanupVertexbuffer()
 {
