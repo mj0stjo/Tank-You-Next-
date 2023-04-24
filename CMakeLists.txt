@@ -67,6 +67,7 @@ add_executable(playground
 	engine/tank.h
 	engine/parse_stl.cpp
 	engine/parse_stl.h
+	model/monke.stl
 
 )
 target_link_libraries(playground

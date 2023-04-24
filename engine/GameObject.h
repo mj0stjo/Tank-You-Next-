@@ -20,6 +20,7 @@ class GameObject {
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
+		std::string stlPath;
 		GLuint programID;
 		void parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::vec3 >& normals, std::string stl_file_name);
 		virtual void inializeBuffers() = 0;

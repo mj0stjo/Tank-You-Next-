@@ -5,11 +5,14 @@
 class Tank : public GameObject
 {
 public:
-	Tank(GLuint programID);
+	Tank(GLuint programID, std::string stlPath);
 	~Tank();
 	void render();
 	void update();
 private:
+	GLuint vaoID;
+	GLuint vbo[2];
+	GLuint vb_size;
 	void initializeBuffers();
 	void cleanupBuffers();
 	bool onCollissionEnter();
