@@ -20,6 +20,7 @@ using namespace glm;
 
 #include "engine/GameObject.h"
 #include "engine/Tank.h"
+#include "engine/Ground.h"
 
 std::vector<std::shared_ptr<GameObject>> gameObjects;
 
@@ -36,9 +37,12 @@ int main( void )
 
   // Create and compile our GLSL program from the shaders
   programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+  GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
   std::shared_ptr<GameObject> monkePtr = std::make_shared<Tank>(programID, "../models/tank.stl");
+  std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
   gameObjects.push_back(monkePtr);
+  gameObjects.push_back(grd);
   //start animation loop until escape key is pressed
 	do{
 
@@ -62,16 +66,16 @@ void updateAnimationLoop()
   // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  // Use our shader
-  glUseProgram(programID);
-
 
   for (int i = 0; i < gameObjects.size(); i++) {
       gameObjects.at(i)->update();
+
+      initalizeVPTransformation();
+      
+	  gameObjects.at(i)->render();
   }
 
 
-  initalizeVPTransformation();
 
  
   glDisableVertexAttribArray(0);

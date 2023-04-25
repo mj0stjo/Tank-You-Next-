@@ -70,6 +70,13 @@ add_executable(playground
 	models/monke.stl
 	models/bunny-decimated.stl
 	models/tank.stl
+	models/ground.stl
+	engine/ground.cpp
+	engine/ground.h
+	engine/GroundFShader.fragmentshader
+	engine/GroundVShader.vertexshader
+	engine/stb_image.h
+	models/ghost.png
 
 )
 target_link_libraries(playground

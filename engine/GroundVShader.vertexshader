@@ -1,0 +1,21 @@
+#version 450 core
+// Input vertex data, different for all executions of this shader.
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout (location = 2) in vec2 vertexUv;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+// Output data ; will be interpolated for each fragment.
+out vec2 UV;
+
+void main(){
+   
+    mat4 mvp = projection * view * model;
+    gl_Position = mvp * vec4(vertexPosition_modelspace, 1);
+    
+    UV = vertexUv;
+
+}
+

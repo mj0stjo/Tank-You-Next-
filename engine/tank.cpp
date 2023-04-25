@@ -17,6 +17,9 @@ Tank::~Tank() {
 }
 
 void Tank::update() {
+
+	glUseProgram(programID);
+	
 	glm::mat4 model = glm::mat4(1.0f);
 
 	rotation.z += 0.001f;
@@ -36,13 +39,10 @@ void Tank::update() {
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
-
-	render();
 	
 }
 
 void Tank::render() {
-	glUseProgram(programID);
 	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -59,6 +59,8 @@ void Tank::render() {
 }
 
 void Tank::initializeBuffers() {
+
+	glUseProgram(programID);
 	
 	glGenVertexArrays(1, &vaoID);
 	glBindVertexArray(vaoID);
