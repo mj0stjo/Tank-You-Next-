@@ -61,6 +61,24 @@ add_executable(playground
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
 	common/shader.hpp
+	engine/GameObject.h
+	engine/GameObject.cpp
+	engine/tank.cpp
+	engine/tank.h
+	engine/parse_stl.cpp
+	engine/parse_stl.h
+	models/monke.stl
+	models/bunny-decimated.stl
+	models/tank.stl
+	models/ground.stl
+	engine/ground.cpp
+	engine/ground.h
+	engine/GroundFShader.fragmentshader
+	engine/GroundVShader.vertexshader
+	engine/stb_image.h
+	models/ghost.png
+	models/groundTexture.png
+
 )
 target_link_libraries(playground
 	${ALL_LIBS}
