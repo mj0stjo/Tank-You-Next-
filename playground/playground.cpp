@@ -1,5 +1,6 @@
 #include "playground.h"
-#include "network/Websocket.h"
+#include "network/server.h"
+#include "network/client.h"
 
 // Include standard headers
 #include <stdio.h>
@@ -19,8 +20,8 @@ using namespace glm;
 int main( void )
 {
 
-    Websocket sock{};
-    sock.test("echo.websocket.org", "80", "Hello, world!");
+    Client s{};
+    s.start();
 
 
 
