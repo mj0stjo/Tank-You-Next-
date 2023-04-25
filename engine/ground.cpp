@@ -72,7 +72,7 @@ void Ground::render() {
 
 void Ground::initializeBuffers() {
 
-	data = stbi_load("../models/ghost.png", &width, &height, &nrChannels, 4);
+	data = stbi_load("../models/groundTexture.png", &width, &height, &nrChannels, 4);
 	
 	glUseProgram(programID);
 	

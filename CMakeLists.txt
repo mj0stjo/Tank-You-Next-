@@ -77,6 +77,7 @@ add_executable(playground
 	engine/GroundVShader.vertexshader
 	engine/stb_image.h
 	models/ghost.png
+	models/groundTexture.png
 
 )
 target_link_libraries(playground
