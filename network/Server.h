@@ -6,14 +6,11 @@
 
 using namespace boost::asio;
 using ip::tcp;
-using std::string;
-using std::cout;
-using std::endl;
 
 class Server {
 private:
-    string read_(tcp::socket& socket);
-    void send_(tcp::socket& socket, const string& message);
+    std::string read(tcp::socket& socket);
+    void send(tcp::socket& socket, const std::string& message);
 public:
     int start();
 };

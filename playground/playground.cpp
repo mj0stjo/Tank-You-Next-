@@ -20,7 +20,7 @@ using namespace glm;
 int main( void )
 {
 
-    Client s{};
+    Server s{};
     s.start();
 
 

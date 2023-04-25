@@ -1,14 +1,14 @@
 #include "Server.h"
 
-string Server::read_(tcp::socket& socket) {
+std::string Server::read(tcp::socket& socket) {
     boost::asio::streambuf buf;
     boost::asio::read_until(socket, buf, "\n");
-    string data = boost::asio::buffer_cast<const char*>(buf.data());
+    std::string data = boost::asio::buffer_cast<const char*>(buf.data());
     return data;
 }
 
-void Server::send_(tcp::socket& socket, const string& message) {
-    const string msg = message + "\n";
+void Server::send(tcp::socket& socket, const std::string& message) {
+    const std::string msg = message + "\n";
     boost::asio::write(socket, boost::asio::buffer(message));
 }
 
@@ -21,10 +21,10 @@ int Server::start() {
     //waiting for connection
     acceptor_.accept(socket_);
     //read operation
-    string message = read_(socket_);
-    cout << message << endl;
+    std::string message = read(socket_);
+    std::cout << message << std::endl;
     //write operation
-    send_(socket_, "Hello From Server!");
-    cout << "Servent sent Hello message to Client!" << endl;
+    send(socket_, "Hello From Server!");
+    std::cout << "Servent sent Hello message to Client!" << std::endl;
     return 0;
 }

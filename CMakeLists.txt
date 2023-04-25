@@ -61,7 +61,8 @@ add_executable(playground
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
 	common/shader.hpp
-	network/websocket.cpp
+	network/NetworkManager.cpp
+	network/NetworkManager.h
 	network/Server.cpp
 	network/Server.h
 	network/Client.h

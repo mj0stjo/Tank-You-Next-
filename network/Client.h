@@ -12,7 +12,7 @@ using std::endl;
 
 class Client {
 public:
-    int start();
+    int start(std::string addr);
 };
 
 #endif
