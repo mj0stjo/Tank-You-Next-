@@ -57,11 +57,12 @@ add_definitions(
 add_executable(playground 
 	playground/playground.cpp
 	playground/playground.h
-	playground/websocket.cpp
 	playground/SimpleFragmentShader.fragmentshader
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
 	common/shader.hpp
+	network/Websocket.cpp
+	network/Websocket.h
 )
 target_link_libraries(playground
 	${ALL_LIBS}
