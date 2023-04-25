@@ -78,6 +78,8 @@ add_executable(playground
 	engine/stb_image.h
 	models/ghost.png
 	models/groundTexture.png
+	engine/keyboardinput.h
+	engine/keyboardinput.cpp
 
 )
 target_link_libraries(playground

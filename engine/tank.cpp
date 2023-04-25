@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+#include "./engine/keyboardinput.h"
 
 
 Tank::Tank(GLuint programmID, std::string stlPath):GameObject(programmID) {
@@ -19,11 +20,32 @@ Tank::~Tank() {
 void Tank::update() {
 
 	glUseProgram(programID);
+
+	if (KeyboardInput::IsPressed('W')) {
+		
+		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
+		position.x += direction.x * 0.1f;
+		position.z -= direction.y * 0.1f;
+	}
+	
+	if (KeyboardInput::IsPressed('S')) {
+		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
+		position.x -= direction.x * 0.1f;
+		position.z += direction.y * 0.1f;
+	}
+
+	if (KeyboardInput::IsPressed('A')) {
+		rotation.z += 0.001f;
+	}
+	
+	if (KeyboardInput::IsPressed('D')) {
+		rotation.z -= 0.001f;
+	}
+
 	
 	glm::mat4 model = glm::mat4(1.0f);
 
-	rotation.z += 0.001f;
-	position.x += 0.011f;
+
 	//default rotation for the model
 	model = glm::rotate(model, rotation.x, glm::vec3(1.0f,0.0f, 0.0f));
 
