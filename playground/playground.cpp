@@ -21,6 +21,7 @@ using namespace glm;
 #include "engine/GameObject.h"
 #include "engine/Tank.h"
 #include "engine/Ground.h"
+#include "engine/keyboardinput.h"
 
 std::vector<std::shared_ptr<GameObject>> gameObjects;
 
@@ -63,6 +64,10 @@ int main( void )
 
 void updateAnimationLoop()
 {
+	KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
+	KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
+	KeyboardInput::setKey('S', glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
+	KeyboardInput::setKey('D', glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS);
   // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -75,7 +80,7 @@ void updateAnimationLoop()
 	  gameObjects.at(i)->render();
   }
 
-
+  
 
  
   glDisableVertexAttribArray(0);
