@@ -5,7 +5,7 @@
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "network/NetworkManager.h"
 
 // Include GLFW
 #include <glfw3.h>
@@ -20,9 +20,9 @@ using namespace glm;
 int main( void )
 {
 
-    Server s{};
-    s.start();
-
+    NetworkManager nm{};
+    nm.startServer();
+    //nm.startClient("192.168.178.39");
 
 
 

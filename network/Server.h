@@ -9,10 +9,15 @@ using ip::tcp;
 
 class Server {
 private:
-    std::string read(tcp::socket& socket);
-    void send(tcp::socket& socket, const std::string& message);
+    std::shared_ptr<tcp::socket> sock;
+    std::shared_ptr<std::string> senMsg;
+    std::shared_ptr<std::string> resMsg;
+    void read();
+    void send();
+    void loop();
 public:
-    int start();
+    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg);
+    void start();
 };
 
 #endif

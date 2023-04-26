@@ -11,8 +11,17 @@ using std::cout;
 using std::endl;
 
 class Client {
+private:
+    std::shared_ptr<tcp::socket> sock;
+    std::shared_ptr<std::string> senMsg;
+    std::shared_ptr<std::string> resMsg;
+    std::string ip;
+    void read();
+    void send();
+    void loop();
 public:
-    int start(std::string addr);
+    Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr);
+    void start();
 };
 
 #endif

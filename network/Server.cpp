@@ -1,30 +1,40 @@
 #include "Server.h"
 
-std::string Server::read(tcp::socket& socket) {
+Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg) {
+    this->senMsg = senMsg;
+    this->resMsg = resMsg;
+}
+
+void Server::read() {
     boost::asio::streambuf buf;
-    boost::asio::read_until(socket, buf, "\n");
+    boost::asio::read_until(sock, buf, "\n");
     std::string data = boost::asio::buffer_cast<const char*>(buf.data());
-    return data;
+    *resMsg = data;
 }
 
-void Server::send(tcp::socket& socket, const std::string& message) {
-    const std::string msg = message + "\n";
-    boost::asio::write(socket, boost::asio::buffer(message));
+void Server::send() {
+    std::string msg = *senMsg + "\n";
+    boost::asio::write(sock, boost::asio::buffer(msg));
 }
 
-int Server::start() {
+void Server::start() {
     boost::asio::io_service io_service;
     //listen for new connection
     tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
     //socket creation 
-    tcp::socket socket_(io_service);
+    sock = std::make_shared<tcp::socket>(io_service);
     //waiting for connection
-    acceptor_.accept(socket_);
-    //read operation
-    std::string message = read(socket_);
-    std::cout << message << std::endl;
-    //write operation
-    send(socket_, "Hello From Server!");
-    std::cout << "Servent sent Hello message to Client!" << std::endl;
-    return 0;
+    acceptor_.accept(*sock);
+    loop();
+}
+
+void Server::loop() {
+    while (true) {
+        //write operation
+        send();
+        std::cout << "Server sent message to Client!" << std::endl;
+        //read operation
+        read();
+        std::cout << "Server ereived message from Client:" << *resMsg << std::endl;
+    }
 }
