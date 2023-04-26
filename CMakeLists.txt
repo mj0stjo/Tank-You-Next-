@@ -80,6 +80,9 @@ add_executable(playground
 	models/groundTexture.png
 	engine/keyboardinput.h
 	engine/keyboardinput.cpp
+	models/kuppel.stl
+	models/base.stl
+	models/rohr.stl
 
 )
 target_link_libraries(playground
