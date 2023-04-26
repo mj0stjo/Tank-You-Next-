@@ -40,9 +40,9 @@ int main( void )
   programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
   GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
-  std::shared_ptr<GameObject> monkePtr = std::make_shared<Tank>(programID, "../models/tank.stl");
+  std::shared_ptr<GameObject> mainTankPtr = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
   std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
-  gameObjects.push_back(monkePtr);
+  gameObjects.push_back(mainTankPtr);
   gameObjects.push_back(grd);
   //start animation loop until escape key is pressed
 	do{
