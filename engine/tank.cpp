@@ -3,6 +3,10 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include "./engine/keyboardinput.h"
+#include "bullet.h"
+#include <memory>
+#include "objectpool.h"
+#include <common/shader.hpp>
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID) {
@@ -10,7 +14,7 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	this->stlPath = baseStl;
 	this->kuppelStl = kuppelStl;
 	this->rohrStl = rohr;
-	
+	this->speed = 20.0f;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 	initializeBuffers();
@@ -19,50 +23,65 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 Tank::~Tank() {
 }
 
-void Tank::update() {
+void Tank::update(float deltaTime) {
+	
+	reloadTime -= deltaTime;
 
 	glUseProgram(programID);
+
+	if (KeyboardInput::IsPressed('_') && reloadTime <= 0) {
+
+		float bulletSpeed = 50.0f;
+		int bulletDamage = 10;
+		glm::vec2 direction = glm::vec2(cos(rotation.z + kupelRotation.z), -sin(rotation.z + kupelRotation.z));
+		glm::vec3 direction3 = glm::vec3(direction.x, -kupelRotation.y, direction.y);
+		GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
+		glm::vec3 bulletPos = glm::vec3(position.x, position.y + 3.75f, position.z);
+
+		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl");
+		ObjectPool::addGameObject(bullet);
+		reloadTime = 3.0f;
+		std::cout << "Spawned a bullet" << std::endl;
+	}
 
 	if (KeyboardInput::IsPressed('W')) {
 		
 		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
-		position.x += direction.x * 0.1f;
-		position.z -= direction.y * 0.1f;
+		position.x += direction.x * speed * deltaTime;
+		position.z -= direction.y * speed * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('S')) {
 		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
-		position.x -= direction.x * 0.1f;
-		position.z += direction.y * 0.1f;
+		position.x -= direction.x * speed * deltaTime;
+		position.z += direction.y * speed * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('A')) {
-		rotation.z += 0.001f;
+		rotation.z += speed/20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('D')) {
-		rotation.z -= 0.001f;
+		rotation.z -= speed / 20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('J')) {
-		kupelRotation.z += 0.001f;
+		kupelRotation.z += speed / 15 * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('L')) {
-		kupelRotation.z -= 0.001f;
+		kupelRotation.z -= speed / 15 * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('K')) {
 		if (kupelRotation.y < 0.165f) 
-			kupelRotation.y += 0.001f;
+			kupelRotation.y += speed / 20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('I')) {
 		if (kupelRotation.y > -0.55f)
-			kupelRotation.y -= 0.001f;
+			kupelRotation.y -= speed / 20 * deltaTime;
 	}
-
-	std::cout << kupelRotation.y << std::endl;
 
 	
 	model = glm::mat4(1.0f);

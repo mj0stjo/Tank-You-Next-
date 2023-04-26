@@ -10,6 +10,8 @@ Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID) {
 	this->stlPath = stlPath;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
+	
+	position.y = -5.6f;
 
 	initializeBuffers();
 }
@@ -17,13 +19,11 @@ Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID) {
 Ground::~Ground() {
 }
 
-void Ground::update() {
+void Ground::update(float deltaTime) {
 
 	glUseProgram(programID);
 	
 	glm::mat4 model = glm::mat4(1.0f);
-
-	position.y = -5.6f;
 	
 	model = glm::rotate(model, rotation.x, glm::vec3(1.0f,0.0f, 0.0f));
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f,0.0f, 1.0f));

@@ -75,6 +75,8 @@ add_executable(playground
 	engine/ground.h
 	engine/GroundFShader.fragmentshader
 	engine/GroundVShader.vertexshader
+	engine/BulletFShader.fragmentshader
+	engine/BulletVShader.vertexshader
 	engine/stb_image.h
 	models/ghost.png
 	models/groundTexture.png
@@ -83,6 +85,10 @@ add_executable(playground
 	models/kuppel.stl
 	models/base.stl
 	models/rohr.stl
+	engine/bullet.cpp
+	engine/bullet.h
+	engine/objectpool.cpp
+	engine/objectpool.h
 
 )
 target_link_libraries(playground

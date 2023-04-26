@@ -8,7 +8,7 @@ public:
 	Ground(GLuint programID, std::string stlPath);
 	~Ground();
 	void render();
-	void update();
+	void update(float deltaTime);
 private:
 	GLuint vaoID;
 	GLuint vb;

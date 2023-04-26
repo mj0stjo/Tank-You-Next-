@@ -8,7 +8,7 @@ public:
 	Tank(GLuint programID, std::string baseStl, std::string kuppelStl, std::string rohr);
 	~Tank();
 	void render();
-	void update();
+	void update(float deltaTime);
 private:
 	GLuint vaoID;
 	GLuint vbo[2];

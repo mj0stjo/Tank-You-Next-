@@ -22,14 +22,19 @@ using namespace glm;
 #include "engine/Tank.h"
 #include "engine/Ground.h"
 #include "engine/keyboardinput.h"
+#include "engine/objectpool.h"
 
 std::vector<std::shared_ptr<GameObject>> gameObjects;
+float applicationStartTime;
+float lastFrameTime;
 
 int main( void )
 {
   //Initialize window
   bool windowInitialized = initializeWindow();
   if (!windowInitialized) return -1;
+
+  applicationStartTime = (float)glfwGetTime();
 
   initalizeVPTransformation();
 
@@ -64,6 +69,10 @@ int main( void )
 
 void updateAnimationLoop()
 {
+    float deltaTime = (float)glfwGetTime() - lastFrameTime;
+    
+    lastFrameTime = (float)glfwGetTime();
+    
 	KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
 	KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
 	KeyboardInput::setKey('S', glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
@@ -74,19 +83,32 @@ void updateAnimationLoop()
 	KeyboardInput::setKey('J', glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS);
 	KeyboardInput::setKey('K', glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS);
 	KeyboardInput::setKey('L', glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS);
+
+    // space bar
+	KeyboardInput::setKey('_', glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
     
   // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
   for (int i = 0; i < gameObjects.size(); i++) {
-      gameObjects.at(i)->update();
+      gameObjects.at(i)->update(deltaTime);
 
       initalizeVPTransformation();
       
 	  gameObjects.at(i)->render();
   }
+  
+  std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
 
+  for (int i = 0; i < bullets.size(); i++) {
+      
+	  bullets.at(i)->update(deltaTime);
+
+	  initalizeVPTransformation();
+      
+	  bullets.at(i)->render();
+  }
   
 
  
@@ -96,6 +118,7 @@ void updateAnimationLoop()
   // Swap buffers
   glfwSwapBuffers(window);
   glfwPollEvents();
+
 }
 
 bool initializeWindow()
@@ -115,7 +138,7 @@ bool initializeWindow()
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   // Open a window and create its OpenGL context
-  window = glfwCreateWindow(1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
+  window = glfwCreateWindow(1300, 1000, "Tutorial 02 - Red triangle", NULL, NULL);
   if (window == NULL) {
     fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
     getchar();
