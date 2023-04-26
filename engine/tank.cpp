@@ -62,8 +62,6 @@ void Tank::update() {
 			kupelRotation.y -= 0.001f;
 	}
 
-	std::cout << kupelRotation.y << std::endl;
-
 	
 	model = glm::mat4(1.0f);
 
