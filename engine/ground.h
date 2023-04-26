@@ -9,13 +9,13 @@ public:
 	~Ground();
 	void render();
 	void update(float deltaTime);
+	bool onCollissionEnter(std::shared_ptr<GameObject> collissionObj);
 private:
 	GLuint vaoID;
 	GLuint vb;
 	GLuint vb_size;
 	void initializeBuffers();
 	void cleanupBuffers();
-	bool onCollissionEnter();
 	GLuint uvbuffer;
 	GLuint textureSamplerID;
 	GLuint texture;

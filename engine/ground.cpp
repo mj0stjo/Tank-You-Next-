@@ -5,13 +5,15 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <engine/stb_image.h>
 
-Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID) {
+Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID, "ground") {
 	this->programID = programID;
 	this->stlPath = stlPath;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 	
 	position.y = -5.6f;
+
+	this->colliderSphere->setCenter(glm::vec3(10000.0f, 10000.0f, 10000.0f));
 
 	initializeBuffers();
 }
@@ -125,7 +127,7 @@ void Ground::cleanupBuffers() {
 	
 }
 
-bool Ground::onCollissionEnter() {
+bool Ground::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 	return false;
 }
 

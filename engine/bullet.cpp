@@ -3,7 +3,7 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 
-Bullet::Bullet(float speed, int damage, glm::vec3 direction, glm::vec3 startPos, GLuint programID, std::string stlPath) : GameObject(programID)
+Bullet::Bullet(float speed, int damage, glm::vec3 direction, glm::vec3 startPos, GLuint programID, std::string stlPath, std::string name) : GameObject(programID, name)
 {
 	this->speed = speed;
 	this->direction = direction;
@@ -73,7 +73,7 @@ void Bullet::render()
 	glDrawArrays(GL_TRIANGLES, 0, vb_size * 3);
 }
 
-bool Bullet::onCollissionEnter()
+bool Bullet::onCollissionEnter(std::shared_ptr<GameObject> collissionObj)
 {
 	return false;
 }
