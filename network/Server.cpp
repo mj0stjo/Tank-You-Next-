@@ -7,14 +7,14 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 
 void Server::read() {
     boost::asio::streambuf buf;
-    boost::asio::read_until(sock, buf, "\n");
+    boost::asio::read_until(*sock, buf, "\n");
     std::string data = boost::asio::buffer_cast<const char*>(buf.data());
     *resMsg = data;
 }
 
 void Server::send() {
     std::string msg = *senMsg + "\n";
-    boost::asio::write(sock, boost::asio::buffer(msg));
+    boost::asio::write(*sock, boost::asio::buffer(msg));
 }
 
 void Server::start() {
