@@ -5,9 +5,11 @@
 #include "./engine/keyboardinput.h"
 
 
-Tank::Tank(GLuint programmID, std::string stlPath):GameObject(programmID) {
+Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID) {
 	this->programID = programID;
-	this->stlPath = stlPath;
+	this->stlPath = baseStl;
+	this->kuppelStl = kuppelStl;
+	this->rohrStl = rohr;
 	
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
@@ -41,9 +43,29 @@ void Tank::update() {
 	if (KeyboardInput::IsPressed('D')) {
 		rotation.z -= 0.001f;
 	}
+	
+	if (KeyboardInput::IsPressed('J')) {
+		kupelRotation.z += 0.001f;
+	}
+
+	if (KeyboardInput::IsPressed('L')) {
+		kupelRotation.z -= 0.001f;
+	}
+
+	if (KeyboardInput::IsPressed('K')) {
+		if (kupelRotation.y < 0.165f) 
+			kupelRotation.y += 0.001f;
+	}
+	
+	if (KeyboardInput::IsPressed('I')) {
+		if (kupelRotation.y > -0.55f)
+			kupelRotation.y -= 0.001f;
+	}
+
+	std::cout << kupelRotation.y << std::endl;
 
 	
-	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::mat4(1.0f);
 
 
 	//default rotation for the model
@@ -75,6 +97,74 @@ void Tank::render() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, vb_size * 3);
+	
+	// set translation to 0 again
+	
+	model[3][0] = 0.0f;
+	model[3][1] = 0.0f;
+	model[3][2] = 0.0f;
+	
+	// add kuppel rotation
+
+	model = glm::rotate(model, kupelRotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+	
+	// add translation for kuppel
+	
+	model[3][0] = position.x;
+	model[3][1] = position.y;
+	model[3][2] = position.z;
+
+	// send new matrix to shader
+
+	GLuint matrixID = glGetUniformLocation(programID, "model");
+	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
+
+	// render kuppel
+	
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vboKuppel[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, vboKuppel[1]);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, vb_sizeKuppel * 3);
+	
+
+	// set translation to 0 again
+	
+	model[3][0] = 0.0f;
+	model[3][1] = 0.0f;
+	model[3][2] = 0.0f;
+
+	// add rotation of rohr
+	
+	model = glm::rotate(model, kupelRotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	// add translation for rohr
+	
+	model[3][0] = position.x;
+	model[3][1] = position.y;
+	model[3][2] = position.z;
+
+	// send new matrix to shader
+
+	matrixID = glGetUniformLocation(programID, "model");
+	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
+
+	// render rohr
+	
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vboRohr[0]);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, vboRohr[1]);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glDrawArrays(GL_TRIANGLES, 0, vb_sizeRohr * 3);
+	
 
 	
 
@@ -83,6 +173,8 @@ void Tank::render() {
 void Tank::initializeBuffers() {
 
 	glUseProgram(programID);
+
+	// Create VAO for the base
 	
 	glGenVertexArrays(1, &vaoID);
 	glBindVertexArray(vaoID);
@@ -108,6 +200,61 @@ void Tank::initializeBuffers() {
 	glBufferData(GL_ARRAY_BUFFER, vb_size, &normals[0], GL_STATIC_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Create VAO for the kuppel
+	
+	glGenVertexArrays(1, &vaoIDKuppel);
+	glBindVertexArray(vaoIDKuppel);
+
+	vertices = std::vector< glm::vec3 >();
+	normals = std::vector< glm::vec3 >();
+
+	parseStl(vertices, normals, kuppelStl);
+	vb_sizeKuppel = vertices.size() * sizeof(glm::vec3);
+
+	std::cout << "Loaded stl file (Kuppel) with " << vb_sizeKuppel << " vertices" << std::endl;
+
+	// Create and populate the buffer objects
+	glGenBuffers(2, vboKuppel);
+
+	// fill vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vboKuppel[0]);
+	glBufferData(GL_ARRAY_BUFFER, vb_sizeKuppel, &vertices[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboKuppel[1]);
+	glBufferData(GL_ARRAY_BUFFER, vb_sizeKuppel, &normals[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	// Create VAO for Rohr
+
+	glGenVertexArrays(1, &vaoIDRohr);
+	glBindVertexArray(vaoIDRohr);
+
+	vertices = std::vector< glm::vec3 >();
+	normals = std::vector< glm::vec3 >();
+
+	parseStl(vertices, normals, rohrStl);
+	vb_sizeRohr = vertices.size() * sizeof(glm::vec3);
+
+	std::cout << "Loaded stl file (Rohr) with " << vb_sizeRohr << " vertices" << std::endl;
+
+	// Create and populate the buffer objects
+	glGenBuffers(2, vboRohr);
+
+	// fill vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vboRohr[0]);
+	glBufferData(GL_ARRAY_BUFFER, vb_sizeRohr, &vertices[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboRohr[1]);
+	glBufferData(GL_ARRAY_BUFFER, vb_sizeRohr, &normals[0], GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	
 
 }
 
