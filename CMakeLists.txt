@@ -89,6 +89,9 @@ add_executable(playground
 	engine/bullet.h
 	engine/objectpool.cpp
 	engine/objectpool.h
+	engine/collidersphere.cpp
+	engine/collidersphere.h
+
 
 )
 target_link_libraries(playground

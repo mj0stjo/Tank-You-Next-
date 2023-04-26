@@ -9,15 +9,23 @@
 #include <string>
 #include <vector>
 
+#include "collidersphere.h"
+
+class ColliderSphere;
+
 class GameObject {
 	public:
-		GameObject(GLuint programID);
+		GameObject(GLuint programID, std::string name);
 		virtual ~GameObject();
 		virtual void update(float deltaTime) = 0;
 		virtual void render() = 0;
-		virtual bool onCollissionEnter() = 0;
+		virtual bool onCollissionEnter(std::shared_ptr<GameObject> collissionObj) = 0;
 		bool isDestroyed();
+		std::shared_ptr<ColliderSphere> getColliderSphere();
+		std::string getName();
 	protected:
+		std::string name;
+		std::shared_ptr<ColliderSphere> colliderSphere;
 		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;

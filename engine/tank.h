@@ -9,6 +9,7 @@ public:
 	~Tank();
 	void render();
 	void update(float deltaTime);
+	bool onCollissionEnter(std::shared_ptr<GameObject> collissionObj);
 private:
 	GLuint vaoID;
 	GLuint vbo[2];
@@ -21,7 +22,6 @@ private:
 	GLuint vb_sizeRohr;
 	void initializeBuffers();
 	void cleanupBuffers();
-	bool onCollissionEnter();
 	std::string nickname;
 	float speed;
 	float reloadTime;

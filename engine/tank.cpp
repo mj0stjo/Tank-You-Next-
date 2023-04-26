@@ -9,7 +9,7 @@
 #include <common/shader.hpp>
 
 
-Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID) {
+Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID, "tank") {
 	this->programID = programID;
 	this->stlPath = baseStl;
 	this->kuppelStl = kuppelStl;
@@ -38,7 +38,7 @@ void Tank::update(float deltaTime) {
 		GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
 		glm::vec3 bulletPos = glm::vec3(position.x, position.y + 3.75f, position.z);
 
-		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl");
+		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl", "localBullet");
 		ObjectPool::addGameObject(bullet);
 		reloadTime = 3.0f;
 		std::cout << "Spawned a bullet" << std::endl;
@@ -282,7 +282,14 @@ void Tank::cleanupBuffers() {
 	glDeleteVertexArrays(1, &vaoID);
 }
 
-bool Tank::onCollissionEnter() {
+bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
+	std::string name = collissionObj->getName();
+	
+	if (name == "localBullet") {
+		std::cout << "self hit";
+	}
+	
+	
 	return false;
 }
 

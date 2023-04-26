@@ -24,7 +24,9 @@ using namespace glm;
 #include "engine/keyboardinput.h"
 #include "engine/objectpool.h"
 
-std::vector<std::shared_ptr<GameObject>> gameObjects;
+std::vector<std::shared_ptr<GameObject>> networkTanks;
+std::vector<std::shared_ptr<GameObject>> obstacles;
+std::shared_ptr<GameObject>  mainTank;
 float applicationStartTime;
 float lastFrameTime;
 
@@ -45,10 +47,9 @@ int main( void )
   programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
   GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
-  std::shared_ptr<GameObject> mainTankPtr = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
+  mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
   std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
-  gameObjects.push_back(mainTankPtr);
-  gameObjects.push_back(grd);
+  obstacles.push_back(grd);
   //start animation loop until escape key is pressed
 	do{
 
@@ -73,6 +74,7 @@ void updateAnimationLoop()
     
     lastFrameTime = (float)glfwGetTime();
     
+    
 	KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
 	KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
 	KeyboardInput::setKey('S', glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
@@ -91,13 +93,17 @@ void updateAnimationLoop()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-  for (int i = 0; i < gameObjects.size(); i++) {
-      gameObjects.at(i)->update(deltaTime);
+  for (int i = 0; i < obstacles.size(); i++) {
+      obstacles.at(i)->update(deltaTime);
 
       initalizeVPTransformation();
       
-	  gameObjects.at(i)->render();
+      obstacles.at(i)->render();
   }
+
+  mainTank->update(deltaTime);
+  initalizeVPTransformation();
+  mainTank->render();
   
   std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
 
@@ -108,6 +114,11 @@ void updateAnimationLoop()
 	  initalizeVPTransformation();
       
 	  bullets.at(i)->render();
+
+      // check collision with mainTank
+      if (mainTank->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
+		  mainTank->onCollissionEnter(bullets.at(i));
+      }
   }
   
 

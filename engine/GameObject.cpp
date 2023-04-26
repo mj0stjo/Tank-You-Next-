@@ -1,17 +1,29 @@
 #include "GameObject.h"
 #include "engine/parse_stl.h"
 
-GameObject::GameObject(GLuint programID)
+GameObject::GameObject(GLuint programID, std::string name)
 {
 	this->programID = programID;
+    this->colliderSphere = std::make_shared<ColliderSphere>(6.0f);
+    this->name = name;
 }
 
 GameObject::~GameObject()
 {
 }
 
+std::string GameObject::getName() {
+	return name; 
+}
+
 bool GameObject::isDestroyed() {
 	return destroyedFlag;
+}
+
+std::shared_ptr<ColliderSphere> GameObject::getColliderSphere() {
+    
+	colliderSphere->setCenter(position);
+	return colliderSphere;
 }
 
 void GameObject::parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::vec3 >& normals, std::string stl_file_name) {
