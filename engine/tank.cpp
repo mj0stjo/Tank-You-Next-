@@ -22,7 +22,7 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 Tank::~Tank() {
 }
 
-void Tank::update() {
+void Tank::update(float deltaTime) {
 
 	glUseProgram(programID);
 

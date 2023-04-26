@@ -25,12 +25,16 @@ using namespace glm;
 #include "engine/objectpool.h"
 
 std::vector<std::shared_ptr<GameObject>> gameObjects;
+float applicationStartTime;
+float lastFrameTime;
 
 int main( void )
 {
   //Initialize window
   bool windowInitialized = initializeWindow();
   if (!windowInitialized) return -1;
+
+  applicationStartTime = (float)glfwGetTime();
 
   initalizeVPTransformation();
 
@@ -65,6 +69,10 @@ int main( void )
 
 void updateAnimationLoop()
 {
+    float deltaTime = (float)glfwGetTime() - lastFrameTime;
+    
+    lastFrameTime = (float)glfwGetTime();
+    
 	KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
 	KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
 	KeyboardInput::setKey('S', glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
@@ -110,6 +118,7 @@ void updateAnimationLoop()
   // Swap buffers
   glfwSwapBuffers(window);
   glfwPollEvents();
+
 }
 
 bool initializeWindow()

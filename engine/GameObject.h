@@ -13,7 +13,7 @@ class GameObject {
 	public:
 		GameObject(GLuint programID);
 		virtual ~GameObject();
-		virtual void update() = 0;
+		virtual void update(float deltaTime) = 0;
 		virtual void render() = 0;
 		virtual bool onCollissionEnter() = 0;
 	protected:

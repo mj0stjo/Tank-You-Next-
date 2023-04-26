@@ -7,7 +7,7 @@ class Bullet : public GameObject
 public:
 	Bullet(float speed, int damage, glm::vec3 direction, GLuint programID, std::string stlPath);
 	~Bullet();
-	void update();
+	void update(float deltaTime);
 	void render();
 	bool onCollissionEnter();
 

@@ -17,7 +17,7 @@ Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID) {
 Ground::~Ground() {
 }
 
-void Ground::update() {
+void Ground::update(float deltaTime) {
 
 	glUseProgram(programID);
 	
