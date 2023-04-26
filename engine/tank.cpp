@@ -14,7 +14,7 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	this->stlPath = baseStl;
 	this->kuppelStl = kuppelStl;
 	this->rohrStl = rohr;
-	
+	this->speed = 20.0f;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 	initializeBuffers();
@@ -47,40 +47,40 @@ void Tank::update(float deltaTime) {
 	if (KeyboardInput::IsPressed('W')) {
 		
 		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
-		position.x += direction.x * 0.1f;
-		position.z -= direction.y * 0.1f;
+		position.x += direction.x * speed * deltaTime;
+		position.z -= direction.y * speed * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('S')) {
 		glm::vec2 direction = glm::vec2(cos(rotation.z), sin(rotation.z));
-		position.x -= direction.x * 0.1f;
-		position.z += direction.y * 0.1f;
+		position.x -= direction.x * speed * deltaTime;
+		position.z += direction.y * speed * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('A')) {
-		rotation.z += 0.001f;
+		rotation.z += speed/20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('D')) {
-		rotation.z -= 0.001f;
+		rotation.z -= speed / 20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('J')) {
-		kupelRotation.z += 0.001f;
+		kupelRotation.z += speed / 15 * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('L')) {
-		kupelRotation.z -= 0.001f;
+		kupelRotation.z -= speed / 15 * deltaTime;
 	}
 
 	if (KeyboardInput::IsPressed('K')) {
 		if (kupelRotation.y < 0.165f) 
-			kupelRotation.y += 0.001f;
+			kupelRotation.y += speed / 20 * deltaTime;
 	}
 	
 	if (KeyboardInput::IsPressed('I')) {
 		if (kupelRotation.y > -0.55f)
-			kupelRotation.y -= 0.001f;
+			kupelRotation.y -= speed / 20 * deltaTime;
 	}
 
 	
