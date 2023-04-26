@@ -16,6 +16,7 @@ class GameObject {
 		virtual void update(float deltaTime) = 0;
 		virtual void render() = 0;
 		virtual bool onCollissionEnter() = 0;
+		bool isDestroyed();
 	protected:
 		glm::vec3 position;
 		glm::vec3 rotation;
@@ -25,8 +26,7 @@ class GameObject {
 		void parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::vec3 >& normals, std::string stl_file_name);
 		virtual void initializeBuffers() = 0;
 		virtual void cleanupBuffers() = 0;
-		
-		
+		bool destroyedFlag = false;
 };
 
 #endif // !GAMEOBJECT_H

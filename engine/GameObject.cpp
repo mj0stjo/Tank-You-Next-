@@ -10,6 +10,10 @@ GameObject::~GameObject()
 {
 }
 
+bool GameObject::isDestroyed() {
+	return destroyedFlag;
+}
+
 void GameObject::parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::vec3 >& normals, std::string stl_file_name) {
     
     stl::stl_data info = stl::parse_stl(stl_file_name);

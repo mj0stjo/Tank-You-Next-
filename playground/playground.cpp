@@ -92,7 +92,7 @@ void updateAnimationLoop()
 
 
   for (int i = 0; i < gameObjects.size(); i++) {
-      gameObjects.at(i)->update();
+      gameObjects.at(i)->update(deltaTime);
 
       initalizeVPTransformation();
       
@@ -103,7 +103,7 @@ void updateAnimationLoop()
 
   for (int i = 0; i < bullets.size(); i++) {
       
-	  bullets.at(i)->update();
+	  bullets.at(i)->update(deltaTime);
 
 	  initalizeVPTransformation();
       

@@ -6,6 +6,7 @@
 #include "bullet.h"
 #include <memory>
 #include "objectpool.h"
+#include <common/shader.hpp>
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID) {
@@ -23,13 +24,23 @@ Tank::~Tank() {
 }
 
 void Tank::update(float deltaTime) {
+	
+	reloadTime -= deltaTime;
 
 	glUseProgram(programID);
 
-	if (KeyboardInput::IsPressed('_')) {
-		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(0.0f, 0, glm::vec3(0.0f, 0.0f, 0.0f), programID, "../models/monke.stl");
-		ObjectPool::addGameObject(bullet);
+	if (KeyboardInput::IsPressed('_') && reloadTime <= 0) {
 
+		float bulletSpeed = 50.0f;
+		int bulletDamage = 10;
+		glm::vec2 direction = glm::vec2(cos(rotation.z + kupelRotation.z), -sin(rotation.z + kupelRotation.z));
+		glm::vec3 direction3 = glm::vec3(direction.x, -kupelRotation.y, direction.y);
+		GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
+		glm::vec3 bulletPos = glm::vec3(position.x, position.y + 3.75f, position.z);
+
+		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl");
+		ObjectPool::addGameObject(bullet);
+		reloadTime = 3.0f;
 		std::cout << "Spawned a bullet" << std::endl;
 	}
 

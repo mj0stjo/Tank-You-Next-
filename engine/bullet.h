@@ -5,7 +5,7 @@
 class Bullet : public GameObject
 {
 public:
-	Bullet(float speed, int damage, glm::vec3 direction, GLuint programID, std::string stlPath);
+	Bullet(float speed, int damage, glm::vec3 direction, glm::vec3 startPos, GLuint programID, std::string stlPath);
 	~Bullet();
 	void update(float deltaTime);
 	void render();
@@ -20,6 +20,8 @@ private:
 	GLuint vaoID;
 	GLuint vb;
 	GLuint vb_size;
+	float lifeTime;
+	float upwardsForce;
 };
 
 
