@@ -3,6 +3,9 @@
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
 #include "./engine/keyboardinput.h"
+#include "bullet.h"
+#include <memory>
+#include "objectpool.h"
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID) {
@@ -22,6 +25,13 @@ Tank::~Tank() {
 void Tank::update() {
 
 	glUseProgram(programID);
+
+	if (KeyboardInput::IsPressed('_')) {
+		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(0.0f, 0, glm::vec3(0.0f, 0.0f, 0.0f), programID, "../models/monke.stl");
+		ObjectPool::addGameObject(bullet);
+
+		std::cout << "Spawned a bullet" << std::endl;
+	}
 
 	if (KeyboardInput::IsPressed('W')) {
 		

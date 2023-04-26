@@ -22,6 +22,7 @@ using namespace glm;
 #include "engine/Tank.h"
 #include "engine/Ground.h"
 #include "engine/keyboardinput.h"
+#include "engine/objectpool.h"
 
 std::vector<std::shared_ptr<GameObject>> gameObjects;
 
@@ -74,6 +75,9 @@ void updateAnimationLoop()
 	KeyboardInput::setKey('J', glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS);
 	KeyboardInput::setKey('K', glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS);
 	KeyboardInput::setKey('L', glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS);
+
+    // space bar
+	KeyboardInput::setKey('_', glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
     
   // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -86,7 +90,17 @@ void updateAnimationLoop()
       
 	  gameObjects.at(i)->render();
   }
+  
+  std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
 
+  for (int i = 0; i < bullets.size(); i++) {
+      
+	  bullets.at(i)->update();
+
+	  initalizeVPTransformation();
+      
+	  bullets.at(i)->render();
+  }
   
 
  
