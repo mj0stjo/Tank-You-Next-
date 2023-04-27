@@ -40,7 +40,7 @@ void Tank::update(float deltaTime) {
 
 		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl", "localBullet");
 		ObjectPool::addGameObject(bullet);
-		reloadTime = 3.0f;
+		reloadTime = 0.25f;
 		std::cout << "Spawned a bullet" << std::endl;
 	}
 
@@ -291,5 +291,17 @@ bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 	
 	
 	return false;
+}
+
+glm::vec3 Tank::getPosition() {
+	return position;
+}
+
+glm::vec3 Tank::getRotation() {
+	return rotation;
+}
+
+glm::vec3 Tank::getKupelRotation() {
+	return kupelRotation;
 }
 

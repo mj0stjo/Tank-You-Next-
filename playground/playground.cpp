@@ -38,7 +38,6 @@ int main( void )
 
   applicationStartTime = (float)glfwGetTime();
 
-  initalizeVPTransformation();
 
   // Add depth buffer
   glEnable(GL_DEPTH_TEST);
@@ -176,16 +175,30 @@ bool initializeWindow()
 }
 
 void initalizeVPTransformation() {
+    
 
     GLuint viewMatrixID = glGetUniformLocation(programID, "view");
     GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
+
+	// cast mainTank from GameObject to Tank
+    std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
+    
+    float cameraY = 32.0f;
+    glm::vec3 tankPos = tankPointer->getPosition();
+	glm::vec3 cameraPos = glm::vec3(tankPos.x, cameraY, tankPos.z);
+    
+    float cameraDistance = - tankPointer->getKupelRotation().y * 50 + 120.0f;
+	// place camera behin tank based on tank rotation
+    cameraPos.x += cameraDistance * sin(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+	cameraPos.z += cameraDistance * cos(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+    
+    
     
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 500.0f);
     
-    glm::vec3 cameraPos = glm::vec3(200, 20, 0);
     glm::mat4 viewMatrix = glm::lookAt(
         cameraPos,
-        glm::vec3(0, 0, 0),
+		tankPointer->getPosition(),
         glm::vec3(0, 1, 0)
     );
     
