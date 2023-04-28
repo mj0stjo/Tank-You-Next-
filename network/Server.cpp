@@ -15,6 +15,7 @@ void Server::read() {
 	else {
 		std::string data = boost::asio::buffer_cast<const char*>(buf.data());
 		*resMsg = data;
+		std::cout << "Server received message from Client:" << *resMsg << std::endl;
 	}
 }
 
@@ -24,6 +25,9 @@ void Server::send() {
 	boost::asio::write(*sock, boost::asio::buffer(msg), error);
 	if (error) {
 		std::cout << "Server send failed: " << error.message() << std::endl;
+	}
+	else {
+		std::cout << "Server sent message to Client!" << std::endl;
 	}
 }
 
@@ -39,12 +43,10 @@ void Server::start() {
 }
 
 void Server::loop() {
-	while (true) {
+	//while (true) {
 		//write operation
 		send();
-		std::cout << "Server sent message to Client!" << std::endl;
 		//read operation
 		read();
-		std::cout << "Server ereived message from Client:" << *resMsg << std::endl;
-	}
+	//}
 }

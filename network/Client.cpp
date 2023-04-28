@@ -40,7 +40,7 @@ void Client::start() {
 
 void Client::loop() {
 	int i{ 0 };
-	while (true) {
+	//while (true) {
 		//read operation
 		read();
 		std::cout << "Client received message from Server:" << *resMsg << std::endl;
@@ -48,7 +48,7 @@ void Client::loop() {
 		send();
 		std::cout << "Client sent message to Server!" << std::endl;
 		if (i++ >= 10) break;
-	}
+	//}
 }
 
 //int Client::start() {
