@@ -1,44 +1,54 @@
 #include "Client.h"
 
 Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr) {
-    this->senMsg = senMsg;
-    this->resMsg = resMsg;
-    this->ip = ipAddr;
+	this->senMsg = senMsg;
+	this->resMsg = resMsg;
+	this->ip = ipAddr;
 }
 
 void Client::read() {
-    boost::asio::streambuf buf;
-    boost::asio::read_until(*sock, buf, "\n");
-    std::string data = boost::asio::buffer_cast<const char*>(buf.data());
-    *resMsg = data;
+	boost::asio::streambuf receive_buffer;
+	boost::system::error_code error;
+	boost::asio::read(*sock, receive_buffer, boost::asio::transfer_all(), error);
+	if (error) {
+		cout << "Cientt receive failed: " << error.message() << endl;
+	}
+	else {
+		const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
+		*resMsg = data;
+	}
 }
 
 void Client::send() {
-    std::string msg = *senMsg + "\n";
-    boost::asio::write(*sock, boost::asio::buffer(msg));
+	std::string msg = *senMsg + "\n";
+	boost::system::error_code error;
+	boost::asio::write(*sock, boost::asio::buffer(msg), error);
+	if (error) {
+		cout << "Clint send failed: " << error.message() << endl;
+	}
 }
 
 void Client::start() {
-    boost::asio::io_service io_service;
-    //socket creation
-    tcp::socket socket(io_service);
-    //connection
-    socket.connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
-    // request/message from client
-    loop();
+	boost::asio::io_service io_service;
+	//socket creation
+	tcp::socket socket(io_service);
+	//connection
+	socket.connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
+	// request/message from client
+	loop();
 }
 
 void Client::loop() {
-    int i{ 0 };
-    while(true) {
-        //read operation
-        read();
-        std::cout << "Client received message from Server:" << *resMsg << std::endl;
-        //write operation
-        send();
-        std::cout << "Client sent message to Server!" << std::endl;
-        if (i++ >= 10) break;
-    }
+	int i{ 0 };
+	while (true) {
+		//read operation
+		read();
+		std::cout << "Client received message from Server:" << *resMsg << std::endl;
+		//write operation
+		send();
+		std::cout << "Client sent message to Server!" << std::endl;
+		if (i++ >= 10) break;
+	}
 }
 
 //int Client::start() {
