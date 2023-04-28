@@ -11,7 +11,7 @@ void Client::read() {
 	boost::system::error_code error;
 	boost::asio::read(*sock, receive_buffer, boost::asio::transfer_all(), error);
 	if (error) {
-		cout << "Cientt receive failed: " << error.message() << endl;
+		cout << "Cient receive failed: " << error.message() << endl;
 	}
 	else {
 		const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
@@ -36,9 +36,9 @@ void Client::send() {
 void Client::start() {
 	boost::asio::io_service io_service;
 	//socket creation
-	tcp::socket socket(io_service);
+	sock = std::make_shared<tcp::socket>(io_service);
 	//connection
-	socket.connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
+	 sock->connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
 	// request/message from client
 	loop();
 }
