@@ -1,11 +1,8 @@
 #include "playground.h"
-#include "network/server.h"
-#include "network/client.h"
 
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
-#include "network/NetworkManager.h"
 
 // Include GLFW
 #include <glfw3.h>
@@ -13,151 +10,213 @@ GLFWwindow* window;
 
 // Include GLM
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
 #include <common/shader.hpp>
 
-int main( void )
+#include <vector>
+#include <memory>
+
+#include "engine/GameObject.h"
+#include "engine/Tank.h"
+#include "engine/Ground.h"
+#include "engine/keyboardinput.h"
+#include "engine/objectpool.h"
+
+std::vector<std::shared_ptr<GameObject>> networkTanks;
+std::vector<std::shared_ptr<GameObject>> obstacles;
+std::shared_ptr<GameObject>  mainTank;
+float applicationStartTime;
+float lastFrameTime;
+
+int main(void)
 {
+    //Initialize window
+    bool windowInitialized = initializeWindow();
+    if (!windowInitialized) return -1;
 
-    NetworkManager nm{};
-    //nm.startServer();
-    nm.startClient("192.168.178.53");
+    applicationStartTime = (float)glfwGetTime();
 
 
+    // Add depth buffer
+    glEnable(GL_DEPTH_TEST);
 
- // //Initialize window
- // bool windowInitialized = initializeWindow();
- // if (!windowInitialized) return -1;
+    // Create and compile our GLSL program from the shaders
+    programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+    GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
- // //Initialize vertex buffer
- // bool vertexbufferInitialized = initializeVertexbuffer();
- // if (!vertexbufferInitialized) return -1;
+    mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
+    std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
+    obstacles.push_back(grd);
+    //start animation loop until escape key is pressed
+    do {
 
- // // Create and compile our GLSL program from the shaders
- // programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+        updateAnimationLoop();
 
-	////start animation loop until escape key is pressed
-	//do{
+    } // Check if the ESC key was pressed or the window was closed
+    while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+        glfwWindowShouldClose(window) == 0);
 
- //   updateAnimationLoop();
 
-	//} // Check if the ESC key was pressed or the window was closed
-	//while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-	//	   glfwWindowShouldClose(window) == 0 );
+    //Cleanup and close window
+    cleanupVertexbuffer();
+    glDeleteProgram(programID);
+    closeWindow();
 
-	//
- // //Cleanup and close window
- // cleanupVertexbuffer();
- // glDeleteProgram(programID);
-	//closeWindow();
-  
-	return 0;
+    return 0;
 }
 
 void updateAnimationLoop()
 {
-  // Clear the screen
-  glClear(GL_COLOR_BUFFER_BIT);
+    float deltaTime = (float)glfwGetTime() - lastFrameTime;
 
-  // Use our shader
-  glUseProgram(programID);
+    lastFrameTime = (float)glfwGetTime();
 
-  // 1rst attribute buffer : vertices
-  glEnableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glVertexAttribPointer(
-    0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-    3,  // size
-    GL_FLOAT,           // type
-    GL_FALSE,           // normalized?
-    0,                  // stride
-    (void*)0            // array buffer offset
-  );
 
-  // Draw the triangle !
-  glDrawArrays(GL_TRIANGLES, 0, vertexbuffer_size); // 3 indices starting at 0 -> 1 triangle
+    KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
+    KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
+    KeyboardInput::setKey('S', glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS);
+    KeyboardInput::setKey('D', glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS);
 
-  glDisableVertexAttribArray(0);
+    // arrow keys
+    KeyboardInput::setKey('I', glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS);
+    KeyboardInput::setKey('J', glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS);
+    KeyboardInput::setKey('K', glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS);
+    KeyboardInput::setKey('L', glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS);
 
-  // Swap buffers
-  glfwSwapBuffers(window);
-  glfwPollEvents();
+    // space bar
+    KeyboardInput::setKey('_', glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
+
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+    for (int i = 0; i < obstacles.size(); i++) {
+        obstacles.at(i)->update(deltaTime);
+
+        initalizeVPTransformation();
+
+        obstacles.at(i)->render();
+    }
+
+    mainTank->update(deltaTime);
+    initalizeVPTransformation();
+    mainTank->render();
+
+    std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
+
+    for (int i = 0; i < bullets.size(); i++) {
+
+        bullets.at(i)->update(deltaTime);
+
+        initalizeVPTransformation();
+
+        bullets.at(i)->render();
+
+        // check collision with mainTank
+        if (mainTank->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
+            mainTank->onCollissionEnter(bullets.at(i));
+        }
+    }
+
+
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+    // Swap buffers
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+
 }
 
 bool initializeWindow()
 {
-  // Initialise GLFW
-  if (!glfwInit())
-  {
-    fprintf(stderr, "Failed to initialize GLFW\n");
-    getchar();
-    return false;
-  }
+    // Initialise GLFW
+    if (!glfwInit())
+    {
+        fprintf(stderr, "Failed to initialize GLFW\n");
+        getchar();
+        return false;
+    }
 
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  // Open a window and create its OpenGL context
-  window = glfwCreateWindow(1024, 768, "Tutorial 02 - Red triangle", NULL, NULL);
-  if (window == NULL) {
-    fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-    getchar();
-    glfwTerminate();
-    return false;
-  }
-  glfwMakeContextCurrent(window);
+    // Open a window and create its OpenGL context
+    window = glfwCreateWindow(1300, 1000, "Tutorial 02 - Red triangle", NULL, NULL);
+    if (window == NULL) {
+        fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+        getchar();
+        glfwTerminate();
+        return false;
+    }
+    glfwMakeContextCurrent(window);
 
-  // Initialize GLEW
-  glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-    fprintf(stderr, "Failed to initialize GLEW\n");
-    getchar();
-    glfwTerminate();
-    return false;
-  }
+    // Initialize GLEW
+    glewExperimental = true; // Needed for core profile
+    if (glewInit() != GLEW_OK) {
+        fprintf(stderr, "Failed to initialize GLEW\n");
+        getchar();
+        glfwTerminate();
+        return false;
+    }
 
-  // Ensure we can capture the escape key being pressed below
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+    // Ensure we can capture the escape key being pressed below
+    glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  return true;
+    // Dark blue background
+    glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+    return true;
 }
 
-bool initializeVertexbuffer()
-{
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
+void initalizeVPTransformation() {
 
-  vertexbuffer_size = 3;
-  static const GLfloat g_vertex_buffer_data[] = {
-    -1.0f, -1.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,
-    0.0f,  1.0f, 0.0f,
-  };
 
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    GLuint viewMatrixID = glGetUniformLocation(programID, "view");
+    GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
 
-  return true;
+    // cast mainTank from GameObject to Tank
+    std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
+
+    float cameraY = 32.0f;
+    glm::vec3 tankPos = tankPointer->getPosition();
+    glm::vec3 cameraPos = glm::vec3(tankPos.x, cameraY, tankPos.z);
+
+    float cameraDistance = -tankPointer->getKupelRotation().y * 50 + 120.0f;
+    // place camera behin tank based on tank rotation
+    cameraPos.x += cameraDistance * sin(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+    cameraPos.z += cameraDistance * cos(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+
+
+
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 500.0f);
+
+    glm::mat4 viewMatrix = glm::lookAt(
+        cameraPos,
+        tankPointer->getPosition(),
+        glm::vec3(0, 1, 0)
+    );
+
+    glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
+    glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &projectionMatrix[0][0]);
 }
+
 
 bool cleanupVertexbuffer()
 {
-  // Cleanup VBO
-  glDeleteBuffers(1, &vertexbuffer);
-  glDeleteVertexArrays(1, &VertexArrayID);
-  return true;
+    // Cleanup VBO
+    glDeleteBuffers(1, &vertexbuffer);
+    glDeleteVertexArrays(1, &VertexArrayID);
+    return true;
 }
 
 bool closeWindow()
 {
-  glfwTerminate();
-  return true;
+    glfwTerminate();
+    return true;
 }
-

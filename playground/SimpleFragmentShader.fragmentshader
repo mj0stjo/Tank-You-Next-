@@ -1,12 +1,13 @@
 #version 330 core
-
-// Ouput data
-out vec3 color;
+out vec4 FragColor;
+  
+in vec3 fnormal; // the input variable from the vertex shader (same name and same type) 
+in vec3 fcolor;
 
 void main()
 {
-
-	// Output color = red 
-	color = vec3(1,0,0);
-
+    vec3 lightRay = vec3(3,1,0);
+    
+    float dp = dot(fnormal, normalize(lightRay));
+    FragColor = vec4(fcolor*dp, 1);
 }

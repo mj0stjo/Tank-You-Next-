@@ -67,6 +67,36 @@ add_executable(playground
 	network/Server.h
 	network/Client.h
 	network/Client.cpp
+	engine/GameObject.h
+	engine/GameObject.cpp
+	engine/tank.cpp
+	engine/tank.h
+	engine/parse_stl.cpp
+	engine/parse_stl.h
+	models/monke.stl
+	models/bunny-decimated.stl
+	models/tank.stl
+	models/ground.stl
+	engine/ground.cpp
+	engine/ground.h
+	engine/GroundFShader.fragmentshader
+	engine/GroundVShader.vertexshader
+	engine/BulletFShader.fragmentshader
+	engine/BulletVShader.vertexshader
+	engine/stb_image.h
+	models/ghost.png
+	models/groundTexture.png
+	engine/keyboardinput.h
+	engine/keyboardinput.cpp
+	models/kuppel.stl
+	models/base.stl
+	models/rohr.stl
+	engine/bullet.cpp
+	engine/bullet.h
+	engine/objectpool.cpp
+	engine/objectpool.h
+	engine/collidersphere.cpp
+	engine/collidersphere.h
 )
 target_link_libraries(playground
 	${ALL_LIBS}
