@@ -21,8 +21,8 @@ int main( void )
 {
 
     NetworkManager nm{};
-    nm.startServer();
-    //nm.startClient("192.168.178.39");
+    //nm.startServer();
+    nm.startClient("192.168.178.53");
 
 
 
