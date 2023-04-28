@@ -9,7 +9,7 @@ Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 void Client::read() {
 	boost::asio::streambuf receive_buffer;
 	boost::system::error_code error;
-	boost::asio::read(*sock, receive_buffer, boost::asio::transfer_all(), error);
+	boost::asio::read_until(*sock, receive_buffer, "\n", error);
 	if (error) {
 		cout << "Cient receive failed: " << error.message() << endl;
 	}
@@ -45,12 +45,12 @@ void Client::start() {
 
 void Client::loop() {
 	int i{ 0 };
-	//while (true) {
+	while (true) {
 		//read operation
 		read();
 		//write operation
 		send();
-	//}
+	}
 }
 
 //int Client::start() {

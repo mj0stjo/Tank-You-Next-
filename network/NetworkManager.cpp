@@ -1,7 +1,7 @@
 #include "network/NetworkManager.h"
 
 NetworkManager::NetworkManager() {
-	localTank = std::make_shared<std::string>("serverTank");
+	localTank = std::make_shared<std::string>("clientTank");
 	remoteTank = std::make_shared<std::string>("");
 }
 

@@ -43,10 +43,10 @@ void Server::start() {
 }
 
 void Server::loop() {
-	//while (true) {
+	while (true) {
 		//write operation
 		send();
 		//read operation
 		read();
-	//}
+	}
 }
