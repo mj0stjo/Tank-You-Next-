@@ -1,6 +1,6 @@
 #include "network/NetworkManager.h"
 
-NetworkManager::NetworkManager() {
+NetworkManager::NetworkManager(std::vector<std::shared_ptr<GameObject>> networkTanks, std::vector<std::shared_ptr<GameObject>> obstacles) {
 	localTank = std::make_shared<std::string>("clientTank");
 	remoteTank = std::make_shared<std::string>("");
 }

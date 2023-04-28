@@ -23,12 +23,15 @@ using namespace glm;
 #include "engine/Ground.h"
 #include "engine/keyboardinput.h"
 #include "engine/objectpool.h"
+#include "network/NetworkManager.h"
 
 std::vector<std::shared_ptr<GameObject>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
 std::shared_ptr<GameObject>  mainTank;
 float applicationStartTime;
 float lastFrameTime;
+
+std::shared_ptr<NetworkManager> netMngr;
 
 int main(void)
 {
@@ -49,6 +52,10 @@ int main(void)
     mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
     std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
     obstacles.push_back(grd);
+
+    //Initialize Network
+    netMngr = std::make_shared<NetworkManager>()
+
     //start animation loop until escape key is pressed
     do {
 
