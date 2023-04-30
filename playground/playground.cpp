@@ -25,9 +25,9 @@ using namespace glm;
 #include "engine/objectpool.h"
 #include "network/NetworkManager.h"
 
-std::vector<std::shared_ptr<GameObject>> networkTanks;
+std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
-std::shared_ptr<GameObject>  mainTank;
+std::shared_ptr<Tank>  mainTank;
 float applicationStartTime;
 float lastFrameTime;
 
@@ -54,7 +54,8 @@ int main(void)
     obstacles.push_back(grd);
 
     //Initialize Network
-    netMngr = std::make_shared<NetworkManager>()
+    netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
+    netMngr->startServer();
 
     //start animation loop until escape key is pressed
     do {
@@ -79,6 +80,8 @@ void updateAnimationLoop()
     float deltaTime = (float)glfwGetTime() - lastFrameTime;
 
     lastFrameTime = (float)glfwGetTime();
+
+    netMngr->synchronize();
 
 
     KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);

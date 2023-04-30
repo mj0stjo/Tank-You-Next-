@@ -2,6 +2,7 @@
 #define CLIENT_H
 
 #include <iostream>
+#include <mutex>
 #include <boost/asio.hpp>
 
 using namespace boost::asio;
@@ -16,11 +17,13 @@ private:
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;
     std::string ip;
+    std::shared_ptr<std::mutex> readMutex;
+    std::shared_ptr<std::mutex> sendMutex;
     void read();
     void send();
     void loop();
 public:
-    Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr);
+    Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex);
     void start();
 };
 

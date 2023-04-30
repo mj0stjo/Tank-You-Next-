@@ -2,6 +2,7 @@
 #define SERVER_H
 
 #include <iostream>
+#include <mutex>
 #include <boost/asio.hpp>
 
 using namespace boost::asio;
@@ -12,11 +13,13 @@ private:
     std::shared_ptr<tcp::socket> sock;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;
+    std::shared_ptr<std::mutex> readMutex;
+    std::shared_ptr<std::mutex> sendMutex;
     void read();
     void send();
     void loop();
 public:
-    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg);
+    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex);
     void start();
 };
 

@@ -1,9 +1,12 @@
 #include "Client.h"
 
-Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr) {
+Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::string ipAddr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex) {
 	this->senMsg = senMsg;
 	this->resMsg = resMsg;
 	this->ip = ipAddr;
+	this->readMutex = readMutex;
+	this->sendMutex = sendMutex;
+	std::cout << "Initialized Client" << std::endl;
 }
 
 void Client::read() {
@@ -15,13 +18,18 @@ void Client::read() {
 	}
 	else {
 		const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
+		std::lock_guard<std::mutex> lg(*readMutex);
 		*resMsg = data;
 		std::cout << "Client received message from Server:" << *resMsg << std::endl;
 	}
 }
 
 void Client::send() {
-	std::string msg = *senMsg + "\n";
+	std::string msg;
+	{
+		std::lock_guard<std::mutex> lg(*sendMutex);
+		 msg = *senMsg + "\n";
+	}
 	boost::system::error_code error;
 	boost::asio::write(*sock, boost::asio::buffer(msg), error);
 	if (error) {
@@ -38,7 +46,8 @@ void Client::start() {
 	//socket creation
 	sock = std::make_shared<tcp::socket>(io_service);
 	//connection
-	 sock->connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
+	sock->connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
+	std::cout << "Started Client" << std::endl;
 	// request/message from client
 	loop();
 }

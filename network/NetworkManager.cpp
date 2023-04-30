@@ -1,16 +1,38 @@
 #include "network/NetworkManager.h"
 
-NetworkManager::NetworkManager(std::vector<std::shared_ptr<GameObject>> networkTanks, std::vector<std::shared_ptr<GameObject>> obstacles) {
-	localTank = std::make_shared<std::string>("clientTank");
-	remoteTank = std::make_shared<std::string>("");
+NetworkManager::NetworkManager(std::shared_ptr<Tank>  localTank, std::vector<std::shared_ptr<Tank>> networkTanks) {
+	this->localTank = localTank;
+	this->networkTanks = networkTanks;
+	localTankMutex = std::make_shared<std::mutex>();
+	remoteTankMutex = std::make_shared<std::mutex>();
+	localTankMsg = std::make_shared<std::string>();
+	remoteTankMsg = std::make_shared<std::string>();
+	std::cout << "Initialized NetworkManager" << std::endl;
 }
 
 void NetworkManager::startServer() {
-	Server s{ localTank, remoteTank };
-	s.start();
+	Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex};
+	try {
+		serverThread = std::make_shared<std::thread>(&Server::start, &s);
+	}
+	catch(const std::exception& e){
+		std::cout << "Creating server thread failed!" << std::endl;
+	}
 }
 
 void NetworkManager::startClient(std::string ip) {
-	Client c{ localTank, remoteTank, ip};
-	c.start();
+	Client c{ localTankMsg, remoteTankMsg, ip, remoteTankMutex, localTankMutex };
+	try {
+		clientThread = std::make_shared<std::thread>(&Client::start, &c);
+	}
+	catch (const std::exception& e) {
+		std::cout << "Creating client thread failed!" << std::endl;
+	}
+}
+
+void NetworkManager::synchronize() {
+	{
+		std::lock_guard<std::mutex> lg(*localTankMutex);
+		*localTankMsg = glm::to_string(localTank->getPosition());;
+	}
 }
