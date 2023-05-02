@@ -6,6 +6,11 @@ Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	this->ip = ipAddr;
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
+
+	boost::asio::io_service io_service;
+	//socket creation
+	sock = std::make_shared<tcp::socket>(io_service);
+
 	std::cout << "Initialized Client" << std::endl;
 }
 
@@ -42,9 +47,6 @@ void Client::send() {
 }
 
 void Client::start() {
-	boost::asio::io_service io_service;
-	//socket creation
-	sock = std::make_shared<tcp::socket>(io_service);
 	//connection
 	sock->connect(tcp::endpoint(boost::asio::ip::address::from_string(ip), 1234));
 	std::cout << "Started Client" << std::endl;

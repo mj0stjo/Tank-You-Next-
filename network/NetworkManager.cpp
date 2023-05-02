@@ -21,9 +21,10 @@ void NetworkManager::startServer() {
 }
 
 void NetworkManager::startClient(std::string ip) {
-	Client c{ localTankMsg, remoteTankMsg, ip, remoteTankMutex, localTankMutex };
 	try {
-		clientThread = std::make_shared<std::thread>(&Client::start, &c);
+		clientThread = std::make_shared<std::thread>([&, ip]{
+			Client c{ localTankMsg, remoteTankMsg, ip, remoteTankMutex, localTankMutex };
+			c.start();});
 	}
 	catch (const std::exception& e) {
 		std::cout << "Creating client thread failed!" << std::endl;
@@ -32,7 +33,7 @@ void NetworkManager::startClient(std::string ip) {
 
 void NetworkManager::synchronize() {
 	{
-		std::lock_guard<std::mutex> lg(*localTankMutex);
-		*localTankMsg = glm::to_string(localTank->getPosition());;
+		//std::lock_guard<std::mutex> lg(*localTankMutex);
+		//*localTankMsg = glm::to_string(localTank->getPosition());;
 	}
 }
