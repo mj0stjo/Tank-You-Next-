@@ -11,6 +11,7 @@ using ip::tcp;
 class Server {
 private:
     std::shared_ptr<tcp::socket> sock;
+    std::shared_ptr<tcp::acceptor> acceptor;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::mutex> readMutex;
@@ -20,7 +21,6 @@ private:
     void loop();
 public:
     Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex);
-    void start();
 };
 
 #endif

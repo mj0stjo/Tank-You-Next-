@@ -5,7 +5,21 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	this->resMsg = resMsg;
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
+
+	boost::asio::io_service io_service;
+	//listen for new connection
+	acceptor = std::make_shared<tcp::acceptor>(io_service, tcp::endpoint(tcp::v4(), 1234));
+	//socket creation 
+	sock = std::make_shared<tcp::socket>(io_service);
+
 	std::cout << "Initialized Server" << std::endl;
+
+	//waiting for connection
+	acceptor->accept(*sock);
+
+	std::cout << "Started server" << std::endl;
+
+	loop();
 }
 
 void Server::read() {
@@ -37,18 +51,6 @@ void Server::send() {
 	else {
 		std::cout << "Server sent message to Client!" << std::endl;
 	}
-}
-
-void Server::start() {
-	boost::asio::io_service io_service;
-	//listen for new connection
-	tcp::acceptor acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234));
-	//socket creation 
-	sock = std::make_shared<tcp::socket>(io_service);
-	std::cout << "Started server" << std::endl;
-	//waiting for connection
-	acceptor_.accept(*sock);
-	loop();
 }
 
 void Server::loop() {
