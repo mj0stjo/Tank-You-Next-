@@ -55,7 +55,6 @@ void Client::start() {
 }
 
 void Client::loop() {
-	int i{ 0 };
 	while (true) {
 		//read operation
 		read();
