@@ -1,4 +1,8 @@
 #version 330 core
+
+in vec3 vertexPos;
+in vec3 mPos;
+
 out vec4 color;
 
 
@@ -6,5 +10,38 @@ out vec4 color;
   
 void main()
 {
-	color = vec4(1.0f, 1.0f, 0.2f, 1.0f);
+
+	//vec3 camPos = vec3(0.0f, 0.0f, 0.0f);
+	//vec3 vertexPosition = gl_Position;
+
+	float distance = length(mPos);
+
+	vec3 white = vec3(1.0f, 1.0f, 1.0f);
+	vec3 pink = vec3(1.0f, 0.0f, 1.0f);
+	vec3 blue = vec3(0.2f, 0.2f, 1.0f);
+	vec3 red = vec3(1.0f, 0.2f, 0.2f);
+	vec3 yellow = vec3(1.0f, 1.0f, 0.0f);
+	vec3 green = vec3(0.0f, 1.0f, 0.2f);
+	
+	
+	float r = sin(vertexPos.y) * white.x + (1- sin(vertexPos.y)) * pink.x;
+	float g = sin(vertexPos.y) * white.y + (1- sin(vertexPos.y)) * pink.y;
+	float b = sin(vertexPos.y) * white.z + (1- sin(vertexPos.y)) * pink.z;
+
+	float r2 = sin(vertexPos.z) * blue.x + (1- sin(vertexPos.z)) * red.x;
+	float g2 = sin(vertexPos.z) * blue.y + (1- sin(vertexPos.z)) * red.y;
+	float b2 = sin(vertexPos.z) * blue.z + (1- sin(vertexPos.z)) * red.z;
+
+	
+	float r3 = sin(vertexPos.x) * yellow.x + (1- sin(vertexPos.x)) * green.x;
+	float g3 = sin(vertexPos.x) * yellow.y + (1- sin(vertexPos.x)) * green.y;
+	float b3 = sin(vertexPos.x) * yellow.z + (1- sin(vertexPos.x)) * green.z;
+
+	
+
+	r = 0.33 * r + 0.33 * r2 + 0.33 * r3;
+	g = 0.33 * g + 0.33 * g2 + 0.33 * g3;
+	b = 0.33 * b + 0.33 * b2 + 0.33 * b3;
+	
+	color = vec4( r, g, b, 1.0f) ;
 }

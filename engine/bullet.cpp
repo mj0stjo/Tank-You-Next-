@@ -40,19 +40,27 @@ void Bullet::update(float deltaTime)
 	
 	
 	glUseProgram(programID);
-
 	
-	position.x += direction.x * speed * deltaTime;
+	float forwardMomentum = direction.y;
+	if (forwardMomentum < 0)
+		forwardMomentum *= -1.0f;
+	forwardMomentum = 1.0f -  forwardMomentum;
+			
+	std::cout << forwardMomentum << std::endl;
+
+	position.x += direction.x * speed * deltaTime * forwardMomentum;
 	position.y += direction.y * speed * deltaTime;
-	position.z += direction.z * speed * deltaTime;
+	position.z += direction.z * speed * deltaTime * forwardMomentum;
 
 
 	glm::mat4 model = glm::mat4(1.0f);
 
+	model = glm::rotate(model, -1.5708f, glm::vec3(1.0f, 0.0f, 0.0f));
+
 	glm::mat4 transformation;//additional transformation for the model
-	transformation[0][0] = 3.0; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
-	transformation[0][1] = 0.0; transformation[1][1] = 3.0; transformation[2][1] = 0.0; transformation[3][1] = position.y;
-	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 3.0; transformation[3][2] = position.z;
+	transformation[0][0] = 10.0; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
+	transformation[0][1] = 0.0; transformation[1][1] = 10.0; transformation[2][1] = 0.0; transformation[3][1] = position.y;
+	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 10.0; transformation[3][2] = position.z;
 	transformation[0][3] = 0.0; transformation[1][3] = 0.0; transformation[2][3] = 0.0; transformation[3][3] = 1.0;
 
 	model = transformation * model;

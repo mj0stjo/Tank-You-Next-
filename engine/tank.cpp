@@ -27,11 +27,11 @@ void Tank::update(float deltaTime) {
 	
 	reloadTime -= deltaTime;
 
-	glUseProgram(programID);
+	
 
 	if (KeyboardInput::IsPressed('_') && reloadTime <= 0) {
 
-		float bulletSpeed = 50.0f;
+		float bulletSpeed = 60.0f;
 		int bulletDamage = 10;
 		glm::vec2 direction = glm::vec2(cos(rotation.z + kupelRotation.z), -sin(rotation.z + kupelRotation.z));
 		glm::vec3 direction3 = glm::vec3(direction.x, -kupelRotation.y, direction.y);
@@ -40,7 +40,7 @@ void Tank::update(float deltaTime) {
 
 		std::shared_ptr<GameObject> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl", "localBullet");
 		ObjectPool::addGameObject(bullet);
-		reloadTime = 0.25f;
+		reloadTime = 1.1f;
 		std::cout << "Spawned a bullet" << std::endl;
 	}
 
@@ -99,6 +99,8 @@ void Tank::update(float deltaTime) {
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 	
 	model = transformation * model;
+
+	glUseProgram(programID);
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
