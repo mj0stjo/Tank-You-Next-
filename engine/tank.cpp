@@ -297,6 +297,10 @@ glm::vec3 Tank::getPosition() {
 	return position;
 }
 
+void Tank::setPosition(glm::vec3 pos) {
+	position = pos;
+}
+
 glm::vec3 Tank::getRotation() {
 	return rotation;
 }

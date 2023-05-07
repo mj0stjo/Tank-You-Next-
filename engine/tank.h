@@ -11,6 +11,7 @@ public:
 	void update(float deltaTime);
 	bool onCollissionEnter(std::shared_ptr<GameObject> collissionObj);
 	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 	glm::vec3 getRotation();
 	glm::vec3 getKupelRotation();
 private:

@@ -4,6 +4,10 @@
 #include <thread>
 #include <mutex>
 #include <glm/gtx/string_cast.hpp>
+
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+
 #include "network/Server.h"
 #include "network/Client.h"
 #include "engine/tank.h"
