@@ -11,8 +11,11 @@ public:
 	void update(float deltaTime);
 	bool onCollissionEnter(std::shared_ptr<GameObject> collissionObj);
 	glm::vec3 getPosition();
+	void setPosition(glm::vec3 pos);
 	glm::vec3 getRotation();
+	void setRotation(glm::vec3 rot);
 	glm::vec3 getKupelRotation();
+	void setKupelRotation(glm::vec3 kRot);
 private:
 	GLuint vaoID;
 	GLuint vbo[2];

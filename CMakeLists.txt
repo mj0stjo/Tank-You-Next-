@@ -61,6 +61,12 @@ add_executable(playground
 	playground/SimpleVertexShader.vertexshader
 	common/shader.cpp
 	common/shader.hpp
+	network/NetworkManager.cpp
+	network/NetworkManager.h
+	network/Server.cpp
+	network/Server.h
+	network/Client.h
+	network/Client.cpp
 	engine/GameObject.h
 	engine/GameObject.cpp
 	engine/tank.cpp
@@ -91,8 +97,6 @@ add_executable(playground
 	engine/objectpool.h
 	engine/collidersphere.cpp
 	engine/collidersphere.h
-
-
 )
 target_link_libraries(playground
 	${ALL_LIBS}
@@ -116,3 +120,7 @@ elseif (${CMAKE_GENERATOR} MATCHES "Xcode" )
 
 endif (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 
+
+# Include Boost
+
+include_directories("boost")
