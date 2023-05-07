@@ -305,7 +305,15 @@ glm::vec3 Tank::getRotation() {
 	return rotation;
 }
 
+void Tank::setRotation(glm::vec3 rot) {
+	rotation = rot;
+}
+
 glm::vec3 Tank::getKupelRotation() {
 	return kupelRotation;
+}
+
+void Tank::setKupelRotation(glm::vec3 kRot) {
+	kupelRotation = kRot;
 }
 
