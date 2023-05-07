@@ -1,17 +1,24 @@
 #version 450 core
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout (location = 2) in vec2 vertexUv;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+out vec3 vertexPos;
+out vec3 mPos;
+
 
 void main(){
-   
+    
+    
     mat4 mvp = projection * view * model;
+    
     gl_Position = mvp * vec4(vertexPosition_modelspace, 1);
+    mPos = (model * vec4(vertexPosition_modelspace, 1.0f)).xyz;
+
+    vertexPos = ( vec4(vertexPosition_modelspace, 1.0f)).xyz;
     
 
 }
