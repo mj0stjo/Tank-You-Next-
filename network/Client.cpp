@@ -12,6 +12,8 @@ Client::Client(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	sock = std::make_shared<tcp::socket>(io_service);
 
 	std::cout << "Initialized Client" << std::endl;
+
+	start();
 }
 
 void Client::read() {
