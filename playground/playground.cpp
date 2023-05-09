@@ -48,12 +48,11 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Create and compile our GLSL program from the shaders
-	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
-	GLuint programID2 = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+	GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 	GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
-	networkTanks.push_back(std::make_shared<Tank>(programID2, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
 	obstacles.push_back(grd);
 
