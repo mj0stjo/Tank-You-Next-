@@ -48,7 +48,7 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
+	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 	GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
@@ -119,7 +119,7 @@ void updateAnimationLoop()
 	mainTank->render();
 
 	////////////////////////////////////////////////////////////////////////
-	networkTanks[0]->update(deltaTime);
+	//networkTanks[0]->update(deltaTime);
 	initalizeVPTransformation();
 	networkTanks[0]->render();
 	////////////////////////////////////////////////////////////////////////

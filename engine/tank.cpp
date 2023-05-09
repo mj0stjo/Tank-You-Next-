@@ -84,6 +84,12 @@ void Tank::update(float deltaTime) {
 	}
 
 	
+	
+	
+}
+
+void Tank::render() {
+
 	model = glm::mat4(1.0f);
 
 
@@ -104,10 +110,6 @@ void Tank::update(float deltaTime) {
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
-	
-}
-
-void Tank::render() {
 	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -137,7 +139,7 @@ void Tank::render() {
 
 	// send new matrix to shader
 
-	GLuint matrixID = glGetUniformLocation(programID, "model");
+	matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
 
 	// render kuppel
