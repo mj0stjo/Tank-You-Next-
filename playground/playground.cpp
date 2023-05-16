@@ -49,18 +49,17 @@ int main(void)
 
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
-	GLuint programID2 = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 	GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
-	networkTanks.push_back(std::make_shared<Tank>(programID2, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
 	obstacles.push_back(grd);
 
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
 	netMngr->startServer();
-	//netMngr->startClient("192.168.178.39");
+	//netMngr->startClient("25.68.196.228");
 
 	//start animation loop until escape key is pressed
 	do {
@@ -120,7 +119,7 @@ void updateAnimationLoop()
 	mainTank->render();
 
 	////////////////////////////////////////////////////////////////////////
-	networkTanks[0]->update(deltaTime);
+	//networkTanks[0]->update(deltaTime);
 	initalizeVPTransformation();
 	networkTanks[0]->render();
 	////////////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@ void main(){
     gl_Position = mvp * vec4(vertexPosition_modelspace, 1);
     mPos = (model * vec4(vertexPosition_modelspace, 1.0f)).xyz;
 
-    vertexPos = ( vec4(vertexPosition_modelspace, 1.0f)).xyz;
+    vertexPos = ( model * vec4(vertexPosition_modelspace, 1.0f)).xyz * 0.50f;
     
 
 }
