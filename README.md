@@ -9,6 +9,8 @@ In Tank You, Next!, two players control their own tanks in a battle. The tanks c
 The objective of the game is to score hits on the opponent's tank. The first player to hit the opponent a certain number of times emerges as the winner. After a game concludes, players have the option to restart and engage in another battle.
 
 ***
+![Uploading image.png…]()
+
 
 ## 2. Features
 
