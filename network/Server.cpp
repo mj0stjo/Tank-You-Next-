@@ -3,7 +3,7 @@
 // Inspiration: https://www.codeproject.com/Articles/1264257/Socket-Programming-in-Cplusplus-using-boost-asio-T
 
 
-Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service) {
+Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service) : acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234)) {
 	this->senMsg = senMsg;
 	this->resMsg = resMsg;
 	this->readMutex = readMutex;
@@ -27,7 +27,6 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	*/
 
 
-	acceptor_ = tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), 1234));
 	start_accept();
 	
 }
