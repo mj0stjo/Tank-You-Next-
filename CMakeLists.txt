@@ -83,6 +83,8 @@ add_executable(playground
 	engine/ground.h
 	engine/GroundFShader.fragmentshader
 	engine/GroundVShader.vertexshader
+	engine/UiFShader.fragmentshader
+	engine/UiVShader.vertexshader
 	engine/BulletFShader.fragmentshader
 	engine/BulletVShader.vertexshader
 	engine/stb_image.h
@@ -101,6 +103,8 @@ add_executable(playground
 	engine/collidersphere.h
 	engine/obstacle.h
 	engine/obstacle.cpp
+	engine/ui.h
+	engine/ui.cpp
 )
 target_link_libraries(playground
 	${ALL_LIBS}

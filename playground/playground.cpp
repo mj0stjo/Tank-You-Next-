@@ -25,10 +25,12 @@ using namespace glm;
 #include "engine/objectpool.h"
 #include "network/NetworkManager.h"
 #include "engine/obstacle.h"
+#include "engine/ui.h"
 
 std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
 std::shared_ptr<Tank>  mainTank;
+std::shared_ptr<Ui> ui;
 float applicationStartTime;
 float lastFrameTime;
 
@@ -51,6 +53,8 @@ int main(void)
 	// Create and compile our GLSL program from the shaders
 	programID = LoadShaders("SimpleVertexShader.vertexshader", "SimpleFragmentShader.fragmentshader");
 	GLuint ground = LoadShaders("../engine/GroundVShader.vertexshader", "../engine/GroundFShader.fragmentshader");
+	
+	GLuint ui_id = LoadShaders("../engine/UiVShader.vertexshader", "../engine/UiFShader.fragmentshader");
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
@@ -66,6 +70,12 @@ int main(void)
 	obstacles.push_back(o3);
 	obstacles.push_back(o4);
 
+	
+
+	// create ui
+	ui = std::make_shared<Ui>(ui_id, "../models/ground.stl"); 
+	//obstacles.push_back(ui);
+	
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
 	netMngr->startServer();
@@ -128,12 +138,21 @@ void updateAnimationLoop()
 	initalizeVPTransformation();
 	mainTank->render();
 
+
 	////////////////////////////////////////////////////////////////////////
 	//networkTanks[0]->update(deltaTime);
 	initalizeVPTransformation();
 	networkTanks[0]->render();
 	////////////////////////////////////////////////////////////////////////
 
+	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
+	float rot = tankPointer->getKupelRotation().z + tankPointer->getRotation().z;
+
+	ui->setRotation(rot);
+	ui->setPosition(tankPointer->getPosition().x, tankPointer->getPosition().z);
+	initalizeVPTransformationUi();
+	ui->render();
+	
 	std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
 
 	for (int i = 0; i < bullets.size(); i++) {
@@ -224,7 +243,7 @@ void initalizeVPTransformation() {
 	glm::vec3 tankPos = tankPointer->getPosition();
 	glm::vec3 cameraPos = glm::vec3(tankPos.x, cameraY, tankPos.z);
 
-	float cameraDistance = -tankPointer->getKupelRotation().y * 50 + 120.0f;
+	float cameraDistance = -tankPointer->getKupelRotation().y *50 + 120.0f;
 	// place camera behin tank based on tank rotation
 	cameraPos.x += cameraDistance * sin(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
 	cameraPos.z += cameraDistance * cos(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
@@ -242,6 +261,62 @@ void initalizeVPTransformation() {
 	glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 	glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &projectionMatrix[0][0]);
 }
+void initalizeVPTransformationUi() {
+
+	GLuint matrixID = glGetUniformLocation(programID, "model");
+	GLuint viewMatrixID = glGetUniformLocation(programID, "view");
+	GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
+
+	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
+	float cameraY = 32.0f;
+	glm::vec3 tankPos = tankPointer->getPosition();
+	glm::vec3 cameraPos = glm::vec3(tankPos.x, cameraY, tankPos.z);
+
+	float cameraDistance = -tankPointer->getKupelRotation().y * 50 + 120.0f;
+
+	cameraPos.x += cameraDistance * sin(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+	cameraPos.z += cameraDistance * cos(tankPointer->getRotation().z + tankPointer->getKupelRotation().z - 1.5718f);
+
+	glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 500.0f);
+
+	glm::mat4 viewMatrix = glm::lookAt(
+		cameraPos,
+		tankPos, // Assuming you want the camera to look at the tank
+		glm::vec3(0, 1, 0)
+	);
+
+	// The UI should be in front of the camera.
+	// Calculate the forward vector of the camera from the view matrix.
+	glm::vec3 forwardVec = -glm::vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]);
+	glm::vec3 upVec = glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+
+	// Calculate the position for the UI plane.
+	glm::vec3 uiPosition = cameraPos + forwardVec * 10.0f; // 10 units in front of the camera.
+
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
+	
+	// calculate rotation
+	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	rotation.x = atan2(forwardVec.y, forwardVec.z);
+	rotation.y = atan2(forwardVec.x, forwardVec.z);
+	rotation.z = atan2(forwardVec.x, forwardVec.y);
+
+	// Rotate the UI plane to face the camera.
+		
+	modelMatrix = glm::translate(modelMatrix, uiPosition);
+	modelMatrix = glm::rotate(modelMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	
+
+	// Optionally scale the UI if needed.
+	//modelMatrix = glm::scale(modelMatrix, glm::vec3(0.9f, 0.9f, 0.9f));
+
+
+	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &modelMatrix[0][0]);
+	glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
+	glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &projectionMatrix[0][0]);
+}
+
 
 
 bool cleanupVertexbuffer()

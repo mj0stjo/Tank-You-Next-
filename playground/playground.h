@@ -20,4 +20,5 @@ bool initializeVertexbuffer(); //<<< initializes the vertex buffer array and bin
 bool cleanupVertexbuffer(); //<<< frees all recources from the vertex buffer
 bool closeWindow(); //<<< Closes the OpenGL window and terminates GLFW
 void initalizeVPTransformation();
+void initalizeVPTransformationUi();
 #endif
