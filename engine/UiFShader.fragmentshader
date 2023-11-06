@@ -2,16 +2,84 @@
 
 in vec3 vertexPos;
 in vec3 mPos;
-in vec2 uv;
 out vec4 color;
 
+float sdTriangleIsosceles( in vec2 p, in vec2 q )
+{
+    p.x = abs(p.x);
+	vec2 a = p - q*clamp( dot(p,q)/dot(q,q), 0.0, 1.0 );
+    vec2 b = p - q*vec2( clamp( p.x/q.x, 0.0, 1.0 ), 1.0 );
+    float k = sign( q.y );
+    float d = min(dot( a, a ),dot(b, b));
+    float s = max( k*(p.x*q.y-p.y*q.x),k*(p.y-q.y)  );
+	return sqrt(d)*sign(s);
+}
+
+float sdTriangle( in vec2 p, in vec2 p0, in vec2 p1, in vec2 p2 )
+{
+    vec2 e0 = p1-p0, e1 = p2-p1, e2 = p0-p2;
+    vec2 v0 = p -p0, v1 = p -p1, v2 = p -p2;
+    vec2 pq0 = v0 - e0*clamp( dot(v0,e0)/dot(e0,e0), 0.0, 1.0 );
+    vec2 pq1 = v1 - e1*clamp( dot(v1,e1)/dot(e1,e1), 0.0, 1.0 );
+    vec2 pq2 = v2 - e2*clamp( dot(v2,e2)/dot(e2,e2), 0.0, 1.0 );
+    float s = sign( e0.x*e2.y - e0.y*e2.x );
+    vec2 d = min(min(vec2(dot(pq0,pq0), s*(v0.x*e0.y-v0.y*e0.x)),
+                     vec2(dot(pq1,pq1), s*(v1.x*e1.y-v1.y*e1.x))),
+                     vec2(dot(pq2,pq2), s*(v2.x*e2.y-v2.y*e2.x)));
+    return -sqrt(d.x)*sign(d.y);
+}
 
 
   
 void main()
 {
 
-	
-	
-	color = vec4(uv.x, uv.y, uv.x, 1.0f);
+	 // modify this
+    float edgeHardness = 0.94;
+
+    vec2 p = gl_FragCoord.xy/vec2(800, 600);
+    p *= 2.;
+    p -= 1.;
+    //p.x *= iResolution.x/iResolution.y;
+    
+    vec2 p1W = vec2(-0.5, .7);
+    vec2 p2W = vec2(-0.5, -.7);
+    
+    vec2 p3W = vec2(0.0);
+    // important: must be in radians
+    float alpha = 3.1415/2.7;
+    
+    p3W.y = (p1W.y + p2W.y) / 2.0;
+    p3W.x = 0.5 * (abs(p1W.y) + abs(p2W.y)) * tan(alpha);
+    p3W.x -= 0.5;
+
+    float d = sdTriangle(p, p1W, p2W, p3W);
+    float d2 = sdTriangle(p ,vec2(-0.7142, .0), vec2(0.5, -0.7), vec2(0.5, 0.7));
+    
+    d = 1. -d;
+    if(d < 0.)
+        d = 0.;
+    d = step(edgeHardness, d);
+    
+    
+    d2 = 1. -d2;
+    if(d2 < 0.)
+        d2 = 0.;
+    d2 = step(edgeHardness, d2);
+    
+    vec4 col = vec4(0.);
+    
+
+    if(d2 >= 0.99)
+        col = vec4(0., 0., 1., 1.);
+    if(d >= 0.99)
+        col = vec4(1.);
+    if(d >= 0.99 && d2>= 0.99)
+        col = mix(vec4(1.), vec4(0.0, 0.0, 1., 1.), 0.6);
+    
+   
+    
+    color = col;
 }
+
+
