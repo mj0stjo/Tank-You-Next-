@@ -19,11 +19,16 @@ private:
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
+
+    tcp::acceptor acceptor_;
+
     void read();
     void send();
     void loop();
+    void start_accept();
+    void handle_accept(boost::shared_ptr<connection_handler> connection, const boost::system::error_code& err);
 public:
-    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex);
+    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service);
 };
 
 

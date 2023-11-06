@@ -1,11 +1,15 @@
 #include "Server.h"
 
-Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex) {
+// Inspiration: https://www.codeproject.com/Articles/1264257/Socket-Programming-in-Cplusplus-using-boost-asio-T
+
+
+Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service) {
 	this->senMsg = senMsg;
 	this->resMsg = resMsg;
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
 
+	/*
 	boost::asio::io_service io_service;
 	//listen for new connection
 	acceptor = std::make_shared<tcp::acceptor>(io_service, tcp::endpoint(tcp::v4(), 1234));
@@ -20,6 +24,31 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	std::cout << "Started server" << std::endl;
 
 	loop();
+	*/
+
+
+	acceptor_ = tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), 1234));
+	start_accept();
+	
+}
+
+void Server::start_accept()
+{
+	// socket
+	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_io_service());
+
+	// asynchronous accept operation and wait for a new connection.
+	acceptor_.async_accept(connection->socket(),
+		boost::bind(&Server::handle_accept, this, connection,
+			boost::asio::placeholders::error));
+}
+
+void Server::handle_accept(boost::shared_ptr<connection_handler> connection, const boost::system::error_code& err)
+{
+	if (!err) {
+		connection->start();
+	}
+	start_accept();
 }
 
 void Server::read() {
