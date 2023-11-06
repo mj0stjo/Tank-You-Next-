@@ -24,6 +24,7 @@ using namespace glm;
 #include "engine/keyboardinput.h"
 #include "engine/objectpool.h"
 #include "network/NetworkManager.h"
+#include "engine/obstacle.h"
 
 std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
@@ -53,8 +54,17 @@ int main(void)
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
+	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 0.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
+	std::shared_ptr<GameObject> o2 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 70.0f, 2.0f, 0.0f, 10.0f, 10.0f, 10.0f);
+	std::shared_ptr<GameObject> o3 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", -20.0f, 2.0f, 50.0f, 10.0f, 10.0f, 10.0f);
+	std::shared_ptr<GameObject> o4 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 30.0f, 2.0f, -80.0f, 10.0f, 10.0f, 10.0f);
 	obstacles.push_back(grd);
+	obstacles.push_back(o1);
+	obstacles.push_back(o2);
+	obstacles.push_back(o3);
+	obstacles.push_back(o4);
 
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
@@ -137,6 +147,13 @@ void updateAnimationLoop()
 		// check collision with mainTank
 		if (mainTank->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
 			mainTank->onCollissionEnter(bullets.at(i));
+		}
+		
+		// check collision with obstacles
+		for (int j = 0; j < obstacles.size(); j++) {
+			if (obstacles.at(j)->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
+				obstacles.at(j)->onCollissionEnter(bullets.at(i));
+			}
 		}
 	}
 
