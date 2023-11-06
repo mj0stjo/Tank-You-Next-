@@ -13,7 +13,9 @@ NetworkManager::NetworkManager(std::shared_ptr<Tank>  localTank, std::vector<std
 void NetworkManager::startServer() {
 	try {
 		serverThread = std::make_shared<std::thread>([&] {
-			Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex };
+			 boost::asio::io_service io_service;
+			 Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex, io_service };
+			 io_service.run();
 			});
 	}
 	catch(const std::exception& e){

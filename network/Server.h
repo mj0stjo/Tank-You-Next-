@@ -44,9 +44,9 @@ private:
     char data[max_length];
 
 public:
-    connection_handler(boost::asio::io_service& io_service) : sock(io_service) {}
+    connection_handler(boost::asio::execution_context& exec_cont) : sock(exec_cont) {}
     // creating the pointer
-    static boost::shared_ptr<connection_handler> create(boost::asio::io_service& io_service);
+    static boost::shared_ptr<connection_handler> create(boost::asio::execution_context& exec_cont);
     //socket creation
     tcp::socket& socket();
     void start();

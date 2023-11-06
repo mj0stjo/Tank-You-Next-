@@ -35,7 +35,7 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 void Server::start_accept()
 {
 	// socket
-	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_io_service());
+	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_executor().context());
 
 	// asynchronous accept operation and wait for a new connection.
 	acceptor_.async_accept(connection->socket(),
@@ -92,9 +92,9 @@ void Server::loop() {
 }
 
 
-boost::shared_ptr<connection_handler> connection_handler::create(boost::asio::io_service& io_service)
+boost::shared_ptr<connection_handler> connection_handler::create(boost::asio::execution_context& exec_cont)
 {
-	return boost::shared_ptr<connection_handler>(new connection_handler(io_service));
+	return boost::shared_ptr<connection_handler>(new connection_handler(exec_cont));
 }
 
 
