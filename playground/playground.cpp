@@ -56,7 +56,7 @@ int main(void)
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
-	std::shared_ptr<GameObject> rock = std::make_shared<Obstacle>(ground, "../models/rock.stl");
+	std::shared_ptr<GameObject> rock = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 0.0f, 2.0f, 0.0f, 10.0f);
 	obstacles.push_back(grd);
 	obstacles.push_back(rock);
 
@@ -141,6 +141,13 @@ void updateAnimationLoop()
 		// check collision with mainTank
 		if (mainTank->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
 			mainTank->onCollissionEnter(bullets.at(i));
+		}
+		
+		// check collision with obstacles
+		for (int j = 0; j < obstacles.size(); j++) {
+			if (obstacles.at(j)->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
+				obstacles.at(j)->onCollissionEnter(bullets.at(i));
+			}
 		}
 	}
 

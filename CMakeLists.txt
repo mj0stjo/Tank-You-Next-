@@ -77,6 +77,7 @@ add_executable(playground
 	models/bunny-decimated.stl
 	models/tank.stl
 	models/rock.stl
+	models/rockTexture.png
 	models/ground.stl
 	engine/ground.cpp
 	engine/ground.h

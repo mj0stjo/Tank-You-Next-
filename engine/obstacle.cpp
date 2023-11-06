@@ -9,15 +9,18 @@
 #include <random>
 
 
-Obstacle::Obstacle(GLuint programmID, std::string stlPath):GameObject(programmID, "obstacle") {
+Obstacle::Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scale):GameObject(programID, "obstacle") {
 	this->programID = programID;
 	this->stlPath = stlPath;
+	this->texturePath = texturePath;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 
-	position.y = 5.6f;
+	this->scale = scale;
 
-	this->colliderSphere->setCenter(glm::vec3(1.0f, 1.0f, 1.0f));
+	position = glm::vec3(posX, posY, posZ);
+
+	this->colliderSphere->setCenter(glm::vec3(1.0f , 1.0f, 1.0f));
 
 	initializeBuffers();
 }
@@ -35,9 +38,9 @@ void Obstacle::update(float deltaTime) {
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	glm::mat4 transformation;//additional transformation for the model
-	transformation[0][0] = 10.0; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
-	transformation[0][1] = 0.0; transformation[1][1] = 10.0; transformation[2][1] = 0.0; transformation[3][1] = position.y;
-	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 10.0; transformation[3][2] = position.z;
+	transformation[0][0] = 1.0 * scale; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
+	transformation[0][1] = 0.0; transformation[1][1] = 1.0 * scale; transformation[2][1] = 0.0; transformation[3][1] = position.y;
+	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 1.0 * scale; transformation[3][2] = position.z;
 	transformation[0][3] = 0.0; transformation[1][3] = 0.0; transformation[2][3] = 0.0; transformation[3][3] = 1.0;
 
 
@@ -75,7 +78,10 @@ void Obstacle::render() {
 
 void Obstacle::initializeBuffers() {
 
-	data = stbi_load("../models/groundTexture.png", &width, &height, &nrChannels, 4);
+	
+	const char* path = texturePath.c_str();
+
+	data = stbi_load(path, &width, &height, &nrChannels, 4);
 
 	glUseProgram(programID);
 
@@ -144,5 +150,15 @@ void Obstacle::cleanupBuffers() {
 }
 
 bool Obstacle::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
+
+	std::string name = collissionObj->getName();
+
+	// @@@@ TODO: add collission logic for network bullets
+	if (name == "localBullet") {
+		std::cout << "hit obstacle";
+	}
+
+
 	return false;
+	
 }
