@@ -76,6 +76,7 @@ add_executable(playground
 	models/monke.stl
 	models/bunny-decimated.stl
 	models/tank.stl
+	models/rock.stl
 	models/ground.stl
 	engine/ground.cpp
 	engine/ground.h
@@ -97,6 +98,8 @@ add_executable(playground
 	engine/objectpool.h
 	engine/collidersphere.cpp
 	engine/collidersphere.h
+	engine/obstacle.h
+	engine/obstacle.cpp
 )
 target_link_libraries(playground
 	${ALL_LIBS}

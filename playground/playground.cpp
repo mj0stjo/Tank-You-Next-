@@ -24,6 +24,7 @@ using namespace glm;
 #include "engine/keyboardinput.h"
 #include "engine/objectpool.h"
 #include "network/NetworkManager.h"
+#include "engine/obstacle.h"
 
 std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
@@ -53,8 +54,11 @@ int main(void)
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
+	std::shared_ptr<GameObject> rock = std::make_shared<Obstacle>(ground, "../models/rock.stl");
 	obstacles.push_back(grd);
+	obstacles.push_back(rock);
 
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
