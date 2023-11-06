@@ -5,7 +5,7 @@
 class Obstacle : public GameObject
 {
 public:
-	Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scale);
+	Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ);
 	~Obstacle();
 	void update(float deltaTime);
 	void render();
@@ -24,7 +24,6 @@ private:
 	int width, height;
 	int nrChannels = 4;
 	std::string texturePath;
-	float scale;
 
 };
 

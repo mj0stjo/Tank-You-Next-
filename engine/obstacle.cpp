@@ -9,14 +9,14 @@
 #include <random>
 
 
-Obstacle::Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scale):GameObject(programID, "obstacle") {
+Obstacle::Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ):GameObject(programID, "obstacle") {
 	this->programID = programID;
 	this->stlPath = stlPath;
 	this->texturePath = texturePath;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 
-	this->scale = scale;
+	scale = glm::vec3(scaleX, scaleY, scaleZ);
 
 	position = glm::vec3(posX, posY, posZ);
 
@@ -37,10 +37,12 @@ void Obstacle::update(float deltaTime) {
 	model = glm::rotate(model, rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
+	
+
 	glm::mat4 transformation;//additional transformation for the model
-	transformation[0][0] = 1.0 * scale; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
-	transformation[0][1] = 0.0; transformation[1][1] = 1.0 * scale; transformation[2][1] = 0.0; transformation[3][1] = position.y;
-	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 1.0 * scale; transformation[3][2] = position.z;
+	transformation[0][0] = 1.0 * scale.x; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
+	transformation[0][1] = 0.0; transformation[1][1] = 1.0 * scale.y; transformation[2][1] = 0.0; transformation[3][1] = position.y;
+	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 1.0 * scale.z; transformation[3][2] = position.z;
 	transformation[0][3] = 0.0; transformation[1][3] = 0.0; transformation[2][3] = 0.0; transformation[3][3] = 1.0;
 
 
