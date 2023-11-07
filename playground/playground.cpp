@@ -27,6 +27,13 @@ using namespace glm;
 #include "engine/obstacle.h"
 #include "engine/ui.h"
 
+//parsing config
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <unordered_map>
+
 std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
 std::shared_ptr<Tank>  mainTank;
@@ -38,6 +45,41 @@ std::shared_ptr<NetworkManager> netMngr;
 
 int main(void)
 {
+	// read from config.txt
+	std::ifstream configFile("../config.txt");
+	std::string line;
+	std::unordered_map<std::string, std::string> config;
+
+	if (configFile.is_open()) {
+		while (getline(configFile, line)) {
+			std::istringstream is_line(line);
+			std::string key;
+			if (getline(is_line, key, '=')) {
+				std::string value;
+				if (getline(is_line, value)) {
+					config[key] = value;
+				}
+			}
+		}
+		configFile.close();
+	}
+	else {
+		std::cerr << "Unable to open config.txt" << std::endl;
+		return 1;
+	}
+
+	// read color from config file
+	glm::vec3 color = glm::vec3(
+		std::stof(config["tankColorR"]),
+		std::stof(config["tankColorG"]),
+		std::stof(config["tankColorB"])
+	);
+	
+	std::string ip = config["ip"];
+
+	
+	
+	
 	//Initialize window
 	bool windowInitialized = initializeWindow();
 	if (!windowInitialized) return -1;
@@ -57,6 +99,8 @@ int main(void)
 	GLuint ui_id = LoadShaders("../engine/UiVShader.vertexshader", "../engine/UiFShader.fragmentshader");
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
+	mainTank->setColor(color);
+	
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");

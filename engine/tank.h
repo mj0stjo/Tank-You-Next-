@@ -19,7 +19,10 @@ public:
 	bool getDestroyed();
 	void setDestroyed(bool b);
 	void respawn();
+	void setColor(glm::vec3 col);
+	glm::vec3 getColor();
 private:
+	glm::vec3 color;
 	GLuint vaoID;
 	GLuint vbo[2];
 	GLuint vb_size;

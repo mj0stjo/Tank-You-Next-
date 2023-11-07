@@ -20,6 +20,8 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	initializeBuffers();
 
 	this->destroyed = false;
+	
+	color = glm::vec3(1.0, 0.0, 0.0);
 }
 
 Tank::~Tank() {
@@ -98,6 +100,7 @@ void Tank::update(float deltaTime) {
 
 void Tank::render() {
 
+
 	model = glm::mat4(1.0f);
 
 
@@ -115,6 +118,9 @@ void Tank::render() {
 	model = transformation * model;
 
 	glUseProgram(programID);
+
+	GLuint colorID = glGetUniformLocation(programID, "tankColor");
+	glUniform3f(colorID, color.x, color.y, color.z);
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
@@ -183,6 +189,8 @@ void Tank::render() {
 
 	matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
+
+	
 
 	// render rohr
 	
@@ -370,3 +378,10 @@ void Tank::respawn() {
 
 }
 
+void Tank::setColor(glm::vec3 col) {
+	color = col;
+}
+
+glm::vec3 Tank::getColor() {
+	return color;
+}
