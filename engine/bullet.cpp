@@ -83,6 +83,19 @@ void Bullet::render()
 
 bool Bullet::onCollissionEnter(std::shared_ptr<GameObject> collissionObj)
 {
+	// get name of collission object
+	std::string name = collissionObj->getName();
+	
+	// check if collission object is a obstacle=
+	if (name == "obstacle") {
+		std::cout << "Buttelt in obstacle" << std::endl;
+
+		// the bullet shouldnt be destroyed in an instance because maybe a player is inside it
+		// so we just increase the lifetime to 4.6f
+		if (lifeTime < 4.6f)
+			lifeTime = 4.6f;
+	}
+
 	return false;
 }
 

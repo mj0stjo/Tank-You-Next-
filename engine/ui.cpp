@@ -5,7 +5,6 @@
 #include <engine/stb_image.h>
 
 Ui::Ui(GLuint programmID, std::string stlPath):GameObject(programmID, "ui") {
-	this->programID = programID;
 	this->stlPath = stlPath;
 	//rotation.x = -1.5708f;
 	rotation.y = -1.5708f;
@@ -23,6 +22,8 @@ Ui::~Ui() {
 void Ui::setRotation(float rot) {
 	rotation.y = rot + -1.5708f;
 
+
+
 	update(0.0);
 }
 
@@ -34,6 +35,7 @@ void Ui::setPosition(float x, float z) {
 void Ui::update(float deltaTime) {
 
 	glUseProgram(programID);
+
 	/*
 	glm::mat4 model = glm::mat4(1.0f);
 	

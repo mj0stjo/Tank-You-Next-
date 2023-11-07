@@ -130,7 +130,7 @@ void updateAnimationLoop()
 	for (int i = 0; i < obstacles.size(); i++) {
 		obstacles.at(i)->update(deltaTime);
 
-		initalizeVPTransformation();
+		initalizeVPTransformation(obstacles.at(i)->getProgrammId());
 
 		obstacles.at(i)->render();
 
@@ -143,7 +143,7 @@ void updateAnimationLoop()
 
 	if (!mainTank->getDestroyed()) {
 		mainTank->update(deltaTime);
-		initalizeVPTransformation();
+		initalizeVPTransformation(mainTank->getProgrammId());
 		mainTank->render();
 	}
 	else {
@@ -156,17 +156,9 @@ void updateAnimationLoop()
 
 	////////////////////////////////////////////////////////////////////////
 	//networkTanks[0]->update(deltaTime);
-	initalizeVPTransformation();
+	initalizeVPTransformation(networkTanks[0]->getProgrammId());
 	networkTanks[0]->render();
 	////////////////////////////////////////////////////////////////////////
-
-	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
-	float rot = tankPointer->getKupelRotation().z + tankPointer->getRotation().z;
-
-	ui->setRotation(rot);
-	ui->setPosition(tankPointer->getPosition().x, tankPointer->getPosition().z);
-	initalizeVPTransformationUi();
-	ui->render();
 	
 	std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();
 
@@ -174,7 +166,7 @@ void updateAnimationLoop()
 
 		bullets.at(i)->update(deltaTime);
 
-		initalizeVPTransformation();
+		initalizeVPTransformation(bullets.at(i)->getProgrammId());
 
 		bullets.at(i)->render();
 
@@ -186,10 +178,21 @@ void updateAnimationLoop()
 		// check collision with obstacles
 		for (int j = 0; j < obstacles.size(); j++) {
 			if (obstacles.at(j)->getColliderSphere()->checkCollision(bullets.at(i)->getColliderSphere())) {
-				obstacles.at(j)->onCollissionEnter(bullets.at(i));
+				//obstacles.at(j)->onCollissionEnter(bullets.at(i));
+				bullets.at(i)->onCollissionEnter(obstacles.at(j));
 			}
 		}
 	}
+
+
+	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
+	float rot = tankPointer->getKupelRotation().z + tankPointer->getRotation().z;
+
+	initalizeVPTransformationUi(ui->getProgrammId(), mainTank->getDestroyed());
+	ui->setRotation(rot);
+	ui->setPosition(tankPointer->getPosition().x, tankPointer->getPosition().z);
+
+	ui->render();
 
 
 
@@ -245,11 +248,13 @@ bool initializeWindow()
 	return true;
 }
 
-void initalizeVPTransformation() {
+void initalizeVPTransformation(GLuint progID) {
+
+	glUseProgram(progID);
 
 
-	GLuint viewMatrixID = glGetUniformLocation(programID, "view");
-	GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
+	GLuint viewMatrixID = glGetUniformLocation(progID, "view");
+	GLuint projectionMatrixID = glGetUniformLocation(progID, "projection");
 
 	// cast mainTank from GameObject to Tank
 	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
@@ -276,11 +281,19 @@ void initalizeVPTransformation() {
 	glUniformMatrix4fv(viewMatrixID, 1, GL_FALSE, &viewMatrix[0][0]);
 	glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, &projectionMatrix[0][0]);
 }
-void initalizeVPTransformationUi() {
+void initalizeVPTransformationUi(GLuint progID, bool dest) {
 
-	GLuint matrixID = glGetUniformLocation(programID, "model");
-	GLuint viewMatrixID = glGetUniformLocation(programID, "view");
-	GLuint projectionMatrixID = glGetUniformLocation(programID, "projection");
+	glUseProgram(progID);
+
+	GLuint matrixID = glGetUniformLocation(progID, "model");
+	GLuint viewMatrixID = glGetUniformLocation(progID, "view");
+	GLuint projectionMatrixID = glGetUniformLocation(progID, "projection");
+
+	std::cout << "other ids " << matrixID << ", "<< viewMatrixID << std::endl;
+
+	GLuint isDestroyedFlag = glGetUniformLocation(progID, "isDestroyed");
+	glUniform1i(isDestroyedFlag, dest);
+	
 
 	std::shared_ptr<Tank> tankPointer = std::static_pointer_cast<Tank>(mainTank);
 	float cameraY = 32.0f;
@@ -299,6 +312,8 @@ void initalizeVPTransformationUi() {
 		tankPos, // Assuming you want the camera to look at the tank
 		glm::vec3(0, 1, 0)
 	);
+
+	
 
 	// The UI should be in front of the camera.
 	// Calculate the forward vector of the camera from the view matrix.

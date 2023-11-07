@@ -6,7 +6,6 @@
 #include <engine/stb_image.h>
 
 Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID, "ground") {
-	this->programID = programID;
 	this->stlPath = stlPath;
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;

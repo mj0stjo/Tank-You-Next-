@@ -9,8 +9,7 @@
 #include <random>
 
 
-Obstacle::Obstacle(GLuint programID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ):GameObject(programID, "obstacle") {
-	this->programID = programID;
+Obstacle::Obstacle(GLuint programmID, std::string stlPath, std::string texturePath, float posX, float posY, float posZ, float scaleX, float scaleY, float scaleZ):GameObject(programmID, "obstacle") {
 	this->stlPath = stlPath;
 	this->texturePath = texturePath;
 	rotation.x = -1.5708f;

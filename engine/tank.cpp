@@ -11,7 +11,6 @@
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID, "tank") {
-	this->programID = programID;
 	this->stlPath = baseStl;
 	this->kuppelStl = kuppelStl;
 	this->rohrStl = rohr;
@@ -27,6 +26,8 @@ Tank::~Tank() {
 }
 
 void Tank::update(float deltaTime) {
+
+	glUseProgram(programID);
 	
 	reloadTime -= deltaTime;
 
