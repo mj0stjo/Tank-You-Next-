@@ -42,7 +42,7 @@ private:
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
-    int clientCount = 1;
+    int clientCount = 0;
 
     tcp::acceptor acceptor_;
 

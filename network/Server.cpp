@@ -9,7 +9,7 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
 
-	this->senArr = std::make_shared<std::vector<std::string>>(13);
+	this->senArr = std::make_shared<std::vector<std::string>>();
 
 
 	/*
@@ -140,9 +140,9 @@ void connection_handler::read() {
 	else {
 		std::string data = boost::asio::buffer_cast<const char*>(buf.data());
 		std::lock_guard<std::mutex> lg(*readMutex);
-		(*senArr).at(id) = data;
-		*resMsg = *senMsg;
-		for (int i = 1; i < senArr->size(); i++) {
+		(*senArr).insert(senArr->begin() + id, data);
+		*resMsg ="";
+		for (int i = 0; i < senArr->size(); i++) {
 			*resMsg += "X" + (*senArr).at(i);
 		}
 		std::cout << "Server received message from Client:" << *resMsg << std::endl;
@@ -155,7 +155,8 @@ void connection_handler::write() {
 	{
 		std::lock_guard<std::mutex> lg(*sendMutex);
 		msg = *senMsg;
-		for (int i = 1; i < senArr->size(); i++) {
+		for (int i = 0; i < senArr->size(); i++) {
+			if (i == id) continue;
 			msg += "X" + (*senArr).at(i);
 		}
 		msg += "\n";
