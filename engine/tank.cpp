@@ -22,6 +22,7 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	this->destroyed = false;
 	
 	color = glm::vec3(1.0, 0.0, 0.0);
+	noobTimes = 0;
 }
 
 Tank::~Tank() {
@@ -317,6 +318,7 @@ bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 		std::cout << "hit rock cocK";
 
 		destroyed = true;
+		noobTimes += 1;
 	}
 	
 	
@@ -357,6 +359,7 @@ void Tank::setDestroyed(bool b) {
 
 void Tank::respawn() {
 
+
 	std::cout << "Respawn" << std::endl;
 
 	float size = 400.0f;
@@ -384,4 +387,8 @@ void Tank::setColor(glm::vec3 col) {
 
 glm::vec3 Tank::getColor() {
 	return color;
+}
+
+int Tank::getNoobTimes() {
+	return noobTimes;
 }

@@ -21,7 +21,9 @@ public:
 	void respawn();
 	void setColor(glm::vec3 col);
 	glm::vec3 getColor();
+	int getNoobTimes();
 private:
+	int noobTimes;
 	glm::vec3 color;
 	GLuint vaoID;
 	GLuint vbo[2];

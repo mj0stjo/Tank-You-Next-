@@ -170,7 +170,7 @@ void updateAnimationLoop()
 
 	// change window name
 
-	std::string windowName = "Tank Game - " + std::to_string((int)(1.0f / deltaTime)) + " FPS";
+	std::string windowName = "Destroyed Count: " + std::to_string(mainTank->getNoobTimes());
 	glfwSetWindowTitle(window, windowName.c_str());
 
 
