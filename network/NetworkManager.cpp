@@ -57,7 +57,7 @@ void NetworkManager::synchronize() {
 
 		for (int i = 0; i < tanks.size(); i++) {
 			std::vector<std::string> vec;
-			boost::split(vec, remoteStr, boost::is_any_of(" "), boost::token_compress_on);
+			boost::split(vec, tanks[i], boost::is_any_of(" "), boost::token_compress_on);
 
 			networkTanks[i]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
 			networkTanks[i]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));

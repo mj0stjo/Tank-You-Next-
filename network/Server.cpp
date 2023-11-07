@@ -140,10 +140,10 @@ void connection_handler::read() {
 	else {
 		std::string data = boost::asio::buffer_cast<const char*>(buf.data());
 		std::lock_guard<std::mutex> lg(*readMutex);
-		(*senArr).insert(senArr->begin() + id, data);
-		*resMsg ="";
+		(*senArr).at(id) = data;
+		*resMsg = "";
 		for (int i = 0; i < senArr->size(); i++) {
-			*resMsg += "X" + (*senArr).at(i);
+			*resMsg += (*senArr).at(i) + "X";
 		}
 		std::cout << "Server received message from Client:" << *resMsg << std::endl;
 
