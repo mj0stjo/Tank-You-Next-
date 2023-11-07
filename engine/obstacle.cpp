@@ -20,7 +20,7 @@ Obstacle::Obstacle(GLuint programID, std::string stlPath, std::string texturePat
 
 	position = glm::vec3(posX, posY, posZ);
 
-	this->colliderSphere->setCenter(glm::vec3(1.0f , 1.0f, 1.0f));
+	this->colliderSphere->setCenter(position);
 
 	initializeBuffers();
 }

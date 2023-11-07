@@ -7,6 +7,7 @@
 #include <memory>
 #include "objectpool.h"
 #include <common/shader.hpp>
+#include <random>
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID, "tank") {
@@ -18,6 +19,8 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 	initializeBuffers();
+
+	this->destroyed = false;
 }
 
 Tank::~Tank() {
@@ -26,6 +29,10 @@ Tank::~Tank() {
 void Tank::update(float deltaTime) {
 	
 	reloadTime -= deltaTime;
+
+	if (position.y > 0) {
+		position.y -= speed * deltaTime * 3.0f;
+	}
 
 	
 
@@ -287,10 +294,20 @@ void Tank::cleanupBuffers() {
 }
 
 bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
+
+	if (destroyed)
+		return false;
+	
 	std::string name = collissionObj->getName();
 	
 	if (name == "localBullet") {
 		std::cout << "self hit";
+	}
+
+	if (name == "obstacle") {
+		std::cout << "hit rock cocK";
+
+		destroyed = true;
 	}
 	
 	
@@ -319,5 +336,36 @@ glm::vec3 Tank::getKupelRotation() {
 
 void Tank::setKupelRotation(glm::vec3 kRot) {
 	kupelRotation = kRot;
+}
+
+bool Tank::getDestroyed() {
+	return destroyed;
+}
+
+void Tank::setDestroyed(bool b) {
+	destroyed = b;
+}
+
+void Tank::respawn() {
+
+	std::cout << "Respawn" << std::endl;
+
+	float size = 400.0f;
+	
+	setDestroyed(false);
+
+	std::default_random_engine generator;
+	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+	
+	// create random position
+	float ranX = distribution(generator) - 0.5f;
+	float ranZ = distribution(generator) - 0.5f;
+
+	position.x = ranX * size;
+	position.z = ranZ * size;
+
+
+	position.y = 30.0f;
+
 }
 

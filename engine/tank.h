@@ -16,6 +16,9 @@ public:
 	void setRotation(glm::vec3 rot);
 	glm::vec3 getKupelRotation();
 	void setKupelRotation(glm::vec3 kRot);
+	bool getDestroyed();
+	void setDestroyed(bool b);
+	void respawn();
 private:
 	GLuint vaoID;
 	GLuint vbo[2];
@@ -36,6 +39,7 @@ private:
 	std::string rohrStl;
 	glm::vec3 kupelRotation;
 	glm::mat4 model;
+	bool destroyed;
 };
 
 #endif // !TANK_H

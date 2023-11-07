@@ -60,7 +60,7 @@ int main(void)
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
-	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 0.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
+	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 100.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
 	std::shared_ptr<GameObject> o2 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 70.0f, 2.0f, 0.0f, 10.0f, 10.0f, 10.0f);
 	std::shared_ptr<GameObject> o3 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", -20.0f, 2.0f, 50.0f, 10.0f, 10.0f, 10.0f);
 	std::shared_ptr<GameObject> o4 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 30.0f, 2.0f, -80.0f, 10.0f, 10.0f, 10.0f);
@@ -118,6 +118,7 @@ void updateAnimationLoop()
 	KeyboardInput::setKey('J', glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS);
 	KeyboardInput::setKey('K', glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS);
 	KeyboardInput::setKey('L', glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS);
+	KeyboardInput::setKey('R', glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS);
 
 	// space bar
 	KeyboardInput::setKey('_', glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS);
@@ -132,11 +133,25 @@ void updateAnimationLoop()
 		initalizeVPTransformation();
 
 		obstacles.at(i)->render();
+
+		// check collision with mainTank
+		if (mainTank->getColliderSphere()->checkCollision(obstacles.at(i)->getColliderSphere())) {
+			mainTank->onCollissionEnter(obstacles.at(i));
+		}
+
 	}
 
-	mainTank->update(deltaTime);
-	initalizeVPTransformation();
-	mainTank->render();
+	if (!mainTank->getDestroyed()) {
+		mainTank->update(deltaTime);
+		initalizeVPTransformation();
+		mainTank->render();
+	}
+	else {
+		if (KeyboardInput::IsPressed('R')) {
+			mainTank->respawn();
+		}
+	}
+	
 
 
 	////////////////////////////////////////////////////////////////////////
