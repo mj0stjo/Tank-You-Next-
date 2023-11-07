@@ -17,7 +17,7 @@ float rectangle(vec2 uv,vec2 p,float width,float height,float blur){
 void main()
 {
 
-    vec2 iResolution = vec2(800, 600);
+    vec2 iResolution = vec2(1300, 1000);
 
    vec2 uv = 5.* ( gl_FragCoord.xy - .5*iResolution.xy ) /iResolution.y;
     uv.x = abs(uv.x);
