@@ -15,23 +15,21 @@ using ip::tcp;
 class connection_handler : public boost::enable_shared_from_this<connection_handler>
 {
 private:
+    int id;
     tcp::socket sock;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;
+    std::shared_ptr<std::vector<std::string>> senArr;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
-    enum { max_length = 1024 };
-    boost::asio::streambuf data;
 
 public:
-    connection_handler(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
+    connection_handler(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     // creating the pointer
-    static boost::shared_ptr<connection_handler> create(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
+    static boost::shared_ptr<connection_handler> create(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     //socket creation
     tcp::socket& socket();
     void start();
-    //void read(const boost::system::error_code& err, size_t bytes_transferred);
-    //void write(const boost::system::error_code& err, size_t bytes_transferred);
     void read();
     void write();
 };
@@ -40,9 +38,11 @@ class Server {
 private:
     std::shared_ptr<tcp::acceptor> acceptor;
     std::shared_ptr<std::string> senMsg;
+    std::shared_ptr<std::vector<std::string>> senArr;
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
+    int clientCount = 1;
 
     tcp::acceptor acceptor_;
 

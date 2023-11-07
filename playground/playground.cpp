@@ -54,6 +54,21 @@ int main(void)
 
 	mainTank = std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl");
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
+
+	for (int i = 0; i < networkTanks.size(); i++) {
+		networkTanks[i]->setPosition(vec3(0, -50, 0));
+	}
 	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
 	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 0.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
@@ -129,9 +144,10 @@ void updateAnimationLoop()
 	mainTank->render();
 
 	////////////////////////////////////////////////////////////////////////
-	//networkTanks[0]->update(deltaTime);
 	initalizeVPTransformation();
-	networkTanks[0]->render();
+	for (int i = 0; i < networkTanks.size(); i++) {
+		networkTanks[i]->render();
+	}
 	////////////////////////////////////////////////////////////////////////
 
 	std::vector<std::shared_ptr<GameObject>> bullets = ObjectPool::getGameObjects();

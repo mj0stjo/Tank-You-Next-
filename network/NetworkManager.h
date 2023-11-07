@@ -17,6 +17,7 @@ class NetworkManager {
 private:
     std::shared_ptr<std::string> localTankMsg;
     std::shared_ptr<std::string> remoteTankMsg;
+    std::shared_ptr<std::string[13]> posList;
     std::shared_ptr<Tank>  localTank;
     std::vector<std::shared_ptr<Tank>> networkTanks;
     std::shared_ptr <std::thread> serverThread;

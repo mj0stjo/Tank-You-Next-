@@ -50,12 +50,20 @@ void NetworkManager::synchronize() {
 		remoteStr = *remoteTankMsg;
 	}
 
-	if (!remoteStr.empty()) {
-		std::vector<std::string> vec;
-		boost::split(vec, remoteStr, boost::is_any_of(" "), boost::token_compress_on);
 
-		networkTanks[0]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
-		networkTanks[0]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
-		networkTanks[0]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+	if (!remoteStr.empty()) {
+		std::vector<std::string> tanks;
+		boost::split(tanks, remoteStr, boost::is_any_of("X"), boost::token_compress_on);
+
+		for (int i = 0; i < tanks.size(); i++) {
+			std::vector<std::string> vec;
+			boost::split(vec, remoteStr, boost::is_any_of(" "), boost::token_compress_on);
+
+			networkTanks[i]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
+			networkTanks[i]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
+			networkTanks[i]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+		}
+
+		
 	}
 }
