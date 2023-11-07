@@ -1,6 +1,7 @@
 #ifndef TANK_H
 #define	TANK_H
 #include "./engine/GameObject.h"
+#include "./engine/bullet.h"
 
 class Tank : public GameObject
 {
@@ -16,7 +17,17 @@ public:
 	void setRotation(glm::vec3 rot);
 	glm::vec3 getKupelRotation();
 	void setKupelRotation(glm::vec3 kRot);
+	bool getDestroyed();
+	void setDestroyed(bool b);
+	void respawn();
+	void setColor(glm::vec3 col);
+	glm::vec3 getColor();
+	int getNoobTimes();
+
+	std::shared_ptr<Bullet> lastBullet;
 private:
+	int noobTimes;
+	glm::vec3 color;
 	GLuint vaoID;
 	GLuint vbo[2];
 	GLuint vb_size;
@@ -36,6 +47,7 @@ private:
 	std::string rohrStl;
 	glm::vec3 kupelRotation;
 	glm::mat4 model;
+	bool destroyed;
 };
 
 #endif // !TANK_H

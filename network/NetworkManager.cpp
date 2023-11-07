@@ -13,7 +13,9 @@ NetworkManager::NetworkManager(std::shared_ptr<Tank>  localTank, std::vector<std
 void NetworkManager::startServer() {
 	try {
 		serverThread = std::make_shared<std::thread>([&] {
-			Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex };
+			 boost::asio::io_service io_service;
+			 Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex, io_service };
+			 io_service.run();
 			});
 	}
 	catch(const std::exception& e){
@@ -37,6 +39,12 @@ void NetworkManager::synchronize() {
 	std::string localStr = std::to_string(localTank->getPosition().x) + " " + std::to_string(localTank->getPosition().y) + " " + std::to_string(localTank->getPosition().z) 
 		+ " " + std::to_string(localTank->getRotation().x) + " " + std::to_string(localTank->getRotation().y) + " " + std::to_string(localTank->getRotation().z)
 		+ " " + std::to_string(localTank->getKupelRotation().x) + " " + std::to_string(localTank->getKupelRotation().y) + " " + std::to_string(localTank->getKupelRotation().z);
+
+	if (localTank->lastBullet != nullptr) {
+		localStr += "B" + std::to_string(localTank->lastBullet->position.x) + " " + std::to_string(localTank->lastBullet->position.y) + " " + std::to_string(localTank->lastBullet->position.z) + " " + 
+			std::to_string(localTank->lastBullet->direction.x) + " " + std::to_string(localTank->lastBullet->direction.y) + " " + std::to_string(localTank->lastBullet->direction.z);
+	}
+
 	{
 		std::lock_guard<std::mutex> lg(*localTankMutex);
 		*localTankMsg = localStr;
@@ -48,12 +56,21 @@ void NetworkManager::synchronize() {
 		remoteStr = *remoteTankMsg;
 	}
 
-	if (!remoteStr.empty()) {
-		std::vector<std::string> vec;
-		boost::split(vec, remoteStr, boost::is_any_of(" "), boost::token_compress_on);
 
-		networkTanks[0]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
-		networkTanks[0]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
-		networkTanks[0]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+	if (!remoteStr.empty()) {
+		std::vector<std::string> tanks;
+		boost::split(tanks, remoteStr, boost::is_any_of("X"), boost::token_compress_on);
+
+		for (int i = 0; i < tanks.size(); i++) {
+			if (tanks[i].empty()) continue;
+			std::vector<std::string> vec;
+			boost::split(vec, tanks[i], boost::is_any_of(" "), boost::token_compress_on);
+
+			networkTanks[i]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
+			networkTanks[i]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
+			networkTanks[i]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+		}
+
+		
 	}
 }

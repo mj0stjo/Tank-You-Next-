@@ -1,6 +1,8 @@
 #version 330 core
 out vec4 FragColor;
   
+uniform vec3 tankColor;
+
 in vec3 fnormal; // the input variable from the vertex shader (same name and same type) 
 in vec3 fcolor;
 
@@ -9,5 +11,5 @@ void main()
     vec3 lightRay = vec3(3,1,0);
     
     float dp = dot(fnormal, normalize(lightRay));
-    FragColor = vec4(fcolor*dp, 1);
+    FragColor = vec4(tankColor*dp, 1);
 }
