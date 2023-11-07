@@ -113,29 +113,39 @@ tcp::socket& connection_handler::socket()
 
 void connection_handler::start()
 {
-
+	/*
 	std::string msg;
 	{
 		std::lock_guard<std::mutex> lg(*sendMutex);
 		msg = *senMsg + "\n";
 	}
-	sock.async_write_some(
-		boost::asio::buffer(msg, max_length),
+
+	boost::asio::async_write(sock, boost::asio::buffer(msg),
 		boost::bind(&connection_handler::write,
 			shared_from_this(),
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
-	sock.async_read_some(
-		boost::asio::buffer(data, max_length),
+	boost::asio::async_read_until(sock,
+		data,
+		'\n',  
 		boost::bind(&connection_handler::read,
 			shared_from_this(),
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
+*/
 
+	
+	while (true) {
+		//write operation
+		write();
+		//read operation
+		read();
+	}
 
 }
 
+/*
 void connection_handler::read(const boost::system::error_code& err, size_t bytes_transferred)
 {
 	if (err) {
@@ -143,7 +153,8 @@ void connection_handler::read(const boost::system::error_code& err, size_t bytes
 	}
 	else {
 		std::lock_guard<std::mutex> lg(*readMutex);
-		*resMsg = data;
+		//std::string dataAsString(boost::asio::buffers_begin(data.data()), boost::asio::buffers_begin(data.data()) + data.size());
+		//*resMsg = dataAsString;
 		std::cout << "Server received message from Client:" << *resMsg << std::endl;
 	}
 }
@@ -153,6 +164,41 @@ void connection_handler::write(const boost::system::error_code& err, size_t byte
 
 	if (err) {
 		std::cout << "Server send failed: " << err.message() << std::endl;
+	}
+	else {
+		std::cout << "Server sent message to Client!" << std::endl;
+	}
+}
+*/
+
+
+
+
+void connection_handler::read() {
+	boost::asio::streambuf buf;
+	boost::system::error_code error;
+	boost::asio::read_until(sock, buf, "\n", error);
+	if (error) {
+		std::cout << "Server receive failed: " << error.message() << std::endl;
+	}
+	else {
+		std::string data = boost::asio::buffer_cast<const char*>(buf.data());
+		std::lock_guard<std::mutex> lg(*readMutex);
+		*resMsg = data;
+		std::cout << "Server received message from Client:" << *resMsg << std::endl;
+	}
+}
+
+void connection_handler::write() {
+	std::string msg;
+	{
+		std::lock_guard<std::mutex> lg(*sendMutex);
+		msg = *senMsg + "\n";
+	}
+	boost::system::error_code error;
+	boost::asio::write(sock, boost::asio::buffer(msg), error);
+	if (error) {
+		std::cout << "Server send failed: " << error.message() << std::endl;
 	}
 	else {
 		std::cout << "Server sent message to Client!" << std::endl;

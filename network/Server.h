@@ -21,7 +21,7 @@ private:
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
     enum { max_length = 1024 };
-    char data[max_length];
+    boost::asio::streambuf data;
 
 public:
     connection_handler(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
@@ -30,8 +30,10 @@ public:
     //socket creation
     tcp::socket& socket();
     void start();
-    void read(const boost::system::error_code& err, size_t bytes_transferred);
-    void write(const boost::system::error_code& err, size_t bytes_transferred);
+    //void read(const boost::system::error_code& err, size_t bytes_transferred);
+    //void write(const boost::system::error_code& err, size_t bytes_transferred);
+    void read();
+    void write();
 };
 
 class Server {
@@ -44,9 +46,6 @@ private:
 
     tcp::acceptor acceptor_;
 
-    void read();
-    void send();
-    void loop();
     void start_accept();
     void handle_accept(boost::shared_ptr<connection_handler> connection, const boost::system::error_code& err);
 public:
