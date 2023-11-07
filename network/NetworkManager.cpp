@@ -56,6 +56,7 @@ void NetworkManager::synchronize() {
 		boost::split(tanks, remoteStr, boost::is_any_of("X"), boost::token_compress_on);
 
 		for (int i = 0; i < tanks.size(); i++) {
+			if (tanks[i].empty()) continue;
 			std::vector<std::string> vec;
 			boost::split(vec, tanks[i], boost::is_any_of(" "), boost::token_compress_on);
 
