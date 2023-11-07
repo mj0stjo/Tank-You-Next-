@@ -34,7 +34,7 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 void Server::start_accept()
 {
 	// socket
-	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_executor().context());
+	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_executor());
 
 	// asynchronous accept operation and wait for a new connection.
 	acceptor_.async_accept(connection->socket(),
@@ -91,11 +91,10 @@ void Server::loop() {
 }
 
 
-boost::shared_ptr<connection_handler> connection_handler::create(boost::asio::execution_context& exec_cont)
+boost::shared_ptr<connection_handler> connection_handler::create(const boost::asio::any_io_executor exec)
 {
-	return boost::shared_ptr<connection_handler>(new connection_handler(exec_cont));
+	return boost::shared_ptr<connection_handler>(new connection_handler(exec));
 }
-
 
 tcp::socket& connection_handler::socket()
 {
@@ -104,24 +103,29 @@ tcp::socket& connection_handler::socket()
 
 void connection_handler::start()
 {
-	sock.async_read_some(
-		boost::asio::buffer(data, max_length),
-		boost::bind(&connection_handler::read,
-			shared_from_this(),
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	while (true) {
 
-	std::string msg;
-	{
-		std::lock_guard<std::mutex> lg(*sendMutex);
-		msg = *senMsg + "\n";
+		std::string msg;
+		{
+			std::lock_guard<std::mutex> lg(*sendMutex);
+			msg = *senMsg + "\n";
+		}
+		sock.async_write_some(
+			boost::asio::buffer(msg, max_length),
+			boost::bind(&connection_handler::write,
+				shared_from_this(),
+				boost::asio::placeholders::error,
+				boost::asio::placeholders::bytes_transferred));
+
+		sock.async_read_some(
+			boost::asio::buffer(data, max_length),
+			boost::bind(&connection_handler::read,
+				shared_from_this(),
+				boost::asio::placeholders::error,
+				boost::asio::placeholders::bytes_transferred));
+
 	}
-	sock.async_write_some(
-		boost::asio::buffer(msg, max_length),
-		boost::bind(&connection_handler::write,
-			shared_from_this(),
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	
 }
 
 void connection_handler::read(const boost::system::error_code& err, size_t bytes_transferred)

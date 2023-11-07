@@ -59,7 +59,7 @@ int main(void)
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
 	netMngr->startServer();
-	//netMngr->startClient("25.68.196.228");
+	//netMngr->startClient("141.59.128.190");
 
 	//start animation loop until escape key is pressed
 	do {
