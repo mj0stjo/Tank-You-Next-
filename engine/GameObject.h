@@ -15,6 +15,8 @@ class ColliderSphere;
 
 class GameObject {
 	public:
+		glm::vec3 position;
+
 		GameObject(GLuint programID, std::string name);
 		virtual ~GameObject();
 		virtual void update(float deltaTime) = 0;
@@ -27,7 +29,6 @@ class GameObject {
 	protected:
 		std::string name;
 		std::shared_ptr<ColliderSphere> colliderSphere;
-		glm::vec3 position;
 		glm::vec3 rotation;
 		glm::vec3 scale;
 		std::string stlPath;

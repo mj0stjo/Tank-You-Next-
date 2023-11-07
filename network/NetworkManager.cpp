@@ -39,6 +39,12 @@ void NetworkManager::synchronize() {
 	std::string localStr = std::to_string(localTank->getPosition().x) + " " + std::to_string(localTank->getPosition().y) + " " + std::to_string(localTank->getPosition().z) 
 		+ " " + std::to_string(localTank->getRotation().x) + " " + std::to_string(localTank->getRotation().y) + " " + std::to_string(localTank->getRotation().z)
 		+ " " + std::to_string(localTank->getKupelRotation().x) + " " + std::to_string(localTank->getKupelRotation().y) + " " + std::to_string(localTank->getKupelRotation().z);
+
+	if (localTank->lastBullet != nullptr) {
+		localStr += "B" + std::to_string(localTank->lastBullet->position.x) + " " + std::to_string(localTank->lastBullet->position.y) + " " + std::to_string(localTank->lastBullet->position.z) + " " + 
+			std::to_string(localTank->lastBullet->direction.x) + " " + std::to_string(localTank->lastBullet->direction.y) + " " + std::to_string(localTank->lastBullet->direction.z);
+	}
+
 	{
 		std::lock_guard<std::mutex> lg(*localTankMutex);
 		*localTankMsg = localStr;

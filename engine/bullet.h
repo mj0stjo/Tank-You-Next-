@@ -5,6 +5,8 @@
 class Bullet : public GameObject
 {
 public:
+	glm::vec3 direction;
+
 	Bullet(float speed, int damage, glm::vec3 direction, glm::vec3 startPos, GLuint programID, std::string stlPath, std::string name);
 	~Bullet();
 	void update(float deltaTime);

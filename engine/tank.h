@@ -1,6 +1,7 @@
 #ifndef TANK_H
 #define	TANK_H
 #include "./engine/GameObject.h"
+#include "./engine/bullet.h"
 
 class Tank : public GameObject
 {
@@ -22,6 +23,8 @@ public:
 	void setColor(glm::vec3 col);
 	glm::vec3 getColor();
 	int getNoobTimes();
+
+	std::shared_ptr<Bullet> lastBullet;
 private:
 	int noobTimes;
 	glm::vec3 color;
