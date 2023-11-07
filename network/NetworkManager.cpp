@@ -43,6 +43,7 @@ void NetworkManager::synchronize() {
 	if (localTank->lastBullet != nullptr) {
 		localStr += "B" + std::to_string(localTank->lastBullet->position.x) + " " + std::to_string(localTank->lastBullet->position.y) + " " + std::to_string(localTank->lastBullet->position.z) + " " + 
 			std::to_string(localTank->lastBullet->direction.x) + " " + std::to_string(localTank->lastBullet->direction.y) + " " + std::to_string(localTank->lastBullet->direction.z);
+		localTank->lastBullet = nullptr;
 	}
 
 	{
@@ -63,12 +64,30 @@ void NetworkManager::synchronize() {
 
 		for (int i = 0; i < tanks.size(); i++) {
 			if (tanks[i].empty()) continue;
+
+			std::vector<std::string> posAndBul;
+			boost::split(posAndBul, tanks[i], boost::is_any_of("B"), boost::token_compress_on);
+
 			std::vector<std::string> vec;
-			boost::split(vec, tanks[i], boost::is_any_of(" "), boost::token_compress_on);
+			boost::split(vec, posAndBul[0], boost::is_any_of(" "), boost::token_compress_on);
 
 			networkTanks[i]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
 			networkTanks[i]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
 			networkTanks[i]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+
+			if (posAndBul.size() > 1) {
+				std::vector<std::string> bul;
+				boost::split(bul, posAndBul[1], boost::is_any_of(" "), boost::token_compress_on);
+
+				float bulletSpeed = 60.0f;
+				int bulletDamage = 10;
+				GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
+
+				std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, glm::vec3(std::stof(bul[3]), std::stof(bul[4]), std::stof(bul[5])), glm::vec3(std::stof(bul[0]), std::stof(bul[1]), std::stof(bul[2])), bulletShaderID, "../models/monke.stl", "localBullet");
+				ObjectPool::addGameObject(bullet);
+				std::cout << "Spawned a bullet" << std::endl;
+			}
+
 		}
 
 		

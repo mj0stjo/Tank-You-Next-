@@ -50,7 +50,7 @@ void Tank::update(float deltaTime) {
 		glm::vec3 bulletPos = glm::vec3(position.x, position.y + 3.75f, position.z);
 
 		std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, direction3, bulletPos, bulletShaderID, "../models/monke.stl", "localBullet");
-		*lastBullet = *bullet;
+		lastBullet = bullet;
 		ObjectPool::addGameObject(bullet);
 		reloadTime = 1.1f;
 		std::cout << "Spawned a bullet" << std::endl;

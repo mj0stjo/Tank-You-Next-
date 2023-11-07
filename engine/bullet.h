@@ -17,7 +17,6 @@ private:
 	void initializeBuffers();
 	void cleanupBuffers();
 	float speed;
-	glm::vec3 direction;
 	int damage;
 	GLuint vaoID;
 	GLuint vb;
