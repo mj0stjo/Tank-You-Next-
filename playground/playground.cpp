@@ -168,6 +168,11 @@ void updateAnimationLoop()
 
 	netMngr->synchronize();
 
+	// change window name
+
+	std::string windowName = "Tank Game - " + std::to_string((int)(1.0f / deltaTime)) + " FPS";
+	glfwSetWindowTitle(window, windowName.c_str());
+
 
 	KeyboardInput::setKey('W', glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS);
 	KeyboardInput::setKey('A', glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS);
