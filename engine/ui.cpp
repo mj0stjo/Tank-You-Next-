@@ -1,32 +1,46 @@
-#include "ground.h"
+#include "ui.h"
 #include "GameObject.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
-#define STB_IMAGE_IMPLEMENTATION
 #include <engine/stb_image.h>
 
-Ground::Ground(GLuint programmID, std::string stlPath):GameObject(programmID, "ground") {
+Ui::Ui(GLuint programmID, std::string stlPath):GameObject(programmID, "ui") {
 	this->stlPath = stlPath;
-	rotation.x = -1.5708f;
-	rotation.z = -1.5708f;
+	//rotation.x = -1.5708f;
+	rotation.y = -1.5708f;
 	
-	position.y = -5.6f;
+	position.y = 5.3f;
 
 	this->colliderSphere->setCenter(glm::vec3(10000.0f, 10000.0f, 10000.0f));
 
 	initializeBuffers();
 }
 
-Ground::~Ground() {
+Ui::~Ui() {
 }
 
-void Ground::update(float deltaTime) {
+void Ui::setRotation(float rot) {
+	rotation.y = rot + -1.5708f;
+
+
+
+	update(0.0);
+}
+
+void Ui::setPosition(float x, float z) {
+	position.x = x;
+	position.z = z;
+}
+
+void Ui::update(float deltaTime) {
 
 	glUseProgram(programID);
-	
+
+	/*
 	glm::mat4 model = glm::mat4(1.0f);
 	
 	model = glm::rotate(model, rotation.x, glm::vec3(1.0f,0.0f, 0.0f));
+	model = glm::rotate(model, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f,0.0f, 1.0f));
 	
 	glm::mat4 transformation;//additional transformation for the model
@@ -39,27 +53,13 @@ void Ground::update(float deltaTime) {
 	model = transformation * model;
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
-	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
+	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);*/
 	
 }
 
-void Ground::render() {
+void Ui::render() {
 
-	
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glUniform1i(textureSamplerID, 0);
-	glEnableVertexAttribArray(2);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glVertexAttribPointer(
-		2,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
-		0,
-		(void*)0
-	);
+	glUseProgram(programID);
 	
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vb);
@@ -67,14 +67,12 @@ void Ground::render() {
 
 	glDrawArrays(GL_TRIANGLES, 0, vb_size * 3);
 
-	
 
 }
 
-void Ground::initializeBuffers() {
+void Ui::initializeBuffers() {
 
-	data = stbi_load("../models/groundTexture.png", &width, &height, &nrChannels, 4);
-	
+
 	glUseProgram(programID);
 	
 	glGenVertexArrays(1, &vaoID);
@@ -97,36 +95,14 @@ void Ground::initializeBuffers() {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	textureSamplerID = glGetUniformLocation(programID, "myTextureSampler");
-
-	static const GLfloat g_uv_buffer_data[] = {
-		0.0f, 0.0f,
-		0.0f, 1.0f,
-		1.0f, 1.0f,
-		0.0f, 0.0f,
-		1.0f, 1.0f,
-		1.0f, 0.0f
-	};
-
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	//glTexSubImage2D(GL_TEXTURE0, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
 }
 
-void Ground::cleanupBuffers() {
+void Ui::cleanupBuffers() {
 	
 }
 
-bool Ground::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
+bool Ui::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 	return false;
 }
 

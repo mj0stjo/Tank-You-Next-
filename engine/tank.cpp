@@ -7,10 +7,10 @@
 #include <memory>
 #include "objectpool.h"
 #include <common/shader.hpp>
+#include <random>
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID, "tank") {
-	this->programID = programID;
 	this->stlPath = baseStl;
 	this->kuppelStl = kuppelStl;
 	this->rohrStl = rohr;
@@ -18,14 +18,25 @@ Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::s
 	rotation.x = -1.5708f;
 	rotation.z = -1.5708f;
 	initializeBuffers();
+
+	this->destroyed = false;
+	
+	color = glm::vec3(1.0, 0.0, 0.0);
+	noobTimes = 0;
 }
 
 Tank::~Tank() {
 }
 
 void Tank::update(float deltaTime) {
+
+	glUseProgram(programID);
 	
 	reloadTime -= deltaTime;
+
+	if (position.y > 0) {
+		position.y -= speed * deltaTime * 3.0f;
+	}
 
 	
 
@@ -90,6 +101,7 @@ void Tank::update(float deltaTime) {
 
 void Tank::render() {
 
+
 	model = glm::mat4(1.0f);
 
 
@@ -107,6 +119,9 @@ void Tank::render() {
 	model = transformation * model;
 
 	glUseProgram(programID);
+
+	GLuint colorID = glGetUniformLocation(programID, "tankColor");
+	glUniform3f(colorID, color.x, color.y, color.z);
 	
 	GLuint matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
@@ -175,6 +190,8 @@ void Tank::render() {
 
 	matrixID = glGetUniformLocation(programID, "model");
 	glUniformMatrix4fv(matrixID, 1, GL_FALSE, &model[0][0]);
+
+	
 
 	// render rohr
 	
@@ -287,10 +304,21 @@ void Tank::cleanupBuffers() {
 }
 
 bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
+
+	if (destroyed)
+		return false;
+	
 	std::string name = collissionObj->getName();
 	
 	if (name == "localBullet") {
 		std::cout << "self hit";
+	}
+
+	if (name == "obstacle") {
+		std::cout << "hit rock cocK";
+
+		destroyed = true;
+		noobTimes += 1;
 	}
 	
 	
@@ -321,3 +349,46 @@ void Tank::setKupelRotation(glm::vec3 kRot) {
 	kupelRotation = kRot;
 }
 
+bool Tank::getDestroyed() {
+	return destroyed;
+}
+
+void Tank::setDestroyed(bool b) {
+	destroyed = b;
+}
+
+void Tank::respawn() {
+
+
+	std::cout << "Respawn" << std::endl;
+
+	float size = 400.0f;
+	
+	setDestroyed(false);
+
+	std::default_random_engine generator;
+	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+	
+	// create random position
+	float ranX = distribution(generator) - 0.5f;
+	float ranZ = distribution(generator) - 0.5f;
+
+	position.x = ranX * size;
+	position.z = ranZ * size;
+
+
+	position.y = 30.0f;
+
+}
+
+void Tank::setColor(glm::vec3 col) {
+	color = col;
+}
+
+glm::vec3 Tank::getColor() {
+	return color;
+}
+
+int Tank::getNoobTimes() {
+	return noobTimes;
+}

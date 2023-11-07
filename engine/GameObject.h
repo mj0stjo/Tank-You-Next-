@@ -23,6 +23,7 @@ class GameObject {
 		bool isDestroyed();
 		std::shared_ptr<ColliderSphere> getColliderSphere();
 		std::string getName();
+		GLuint getProgrammId();
 	protected:
 		std::string name;
 		std::shared_ptr<ColliderSphere> colliderSphere;

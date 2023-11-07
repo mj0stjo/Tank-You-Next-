@@ -50,3 +50,7 @@ void GameObject::parseStl(std::vector< glm::vec3 >& vertices, std::vector< glm::
         normals.push_back(triangleNormal);
     }
 }
+
+GLuint GameObject::getProgrammId() {
+    return programID;
+}
