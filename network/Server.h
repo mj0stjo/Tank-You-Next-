@@ -24,9 +24,9 @@ private:
     char data[max_length];
 
 public:
-    connection_handler(const boost::asio::any_io_executor exec) : sock(exec) {}
+    connection_handler(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     // creating the pointer
-    static boost::shared_ptr<connection_handler> create(const boost::asio::any_io_executor exec);
+    static boost::shared_ptr<connection_handler> create(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     //socket creation
     tcp::socket& socket();
     void start();
@@ -36,7 +36,6 @@ public:
 
 class Server {
 private:
-    std::shared_ptr<tcp::socket> sock;
     std::shared_ptr<tcp::acceptor> acceptor;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;

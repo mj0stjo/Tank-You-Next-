@@ -9,11 +9,12 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
 
+
 	/*
 	boost::asio::io_service io_service;
 	//listen for new connection
 	acceptor = std::make_shared<tcp::acceptor>(io_service, tcp::endpoint(tcp::v4(), 1234));
-	//socket creation 
+	//socket creation
 	sock = std::make_shared<tcp::socket>(io_service);
 
 	std::cout << "Initialized Server" << std::endl;
@@ -26,15 +27,15 @@ Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string>
 	loop();
 	*/
 
-
+	std::cout << "Initialized Server" << std::endl;
 	start_accept();
-	
+
 }
 
 void Server::start_accept()
 {
 	// socket
-	boost::shared_ptr<connection_handler> connection = connection_handler::create(acceptor_.get_executor());
+	boost::shared_ptr<connection_handler> connection = connection_handler::create(senMsg, resMsg, readMutex, sendMutex, acceptor_.get_executor());
 
 	// asynchronous accept operation and wait for a new connection.
 	acceptor_.async_accept(connection->socket(),
@@ -45,11 +46,13 @@ void Server::start_accept()
 void Server::handle_accept(boost::shared_ptr<connection_handler> connection, const boost::system::error_code& err)
 {
 	if (!err) {
+		std::cout << "New Client connected." << std::endl;
 		connection->start();
 	}
 	start_accept();
 }
 
+/*
 void Server::read() {
 	boost::asio::streambuf buf;
 	boost::system::error_code error;
@@ -89,11 +92,18 @@ void Server::loop() {
 		read();
 	}
 }
+*/
 
+connection_handler::connection_handler(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec) : sock(exec) {
+	this->senMsg = senMsg;
+	this->resMsg = resMsg;
+	this->readMutex = readMutex;
+	this->sendMutex = sendMutex;
+}
 
-boost::shared_ptr<connection_handler> connection_handler::create(const boost::asio::any_io_executor exec)
+boost::shared_ptr<connection_handler> connection_handler::create(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec)
 {
-	return boost::shared_ptr<connection_handler>(new connection_handler(exec));
+	return boost::shared_ptr<connection_handler>(new connection_handler(senMsg, resMsg, readMutex, sendMutex, exec));
 }
 
 tcp::socket& connection_handler::socket()
@@ -103,29 +113,27 @@ tcp::socket& connection_handler::socket()
 
 void connection_handler::start()
 {
-	while (true) {
 
-		std::string msg;
-		{
-			std::lock_guard<std::mutex> lg(*sendMutex);
-			msg = *senMsg + "\n";
-		}
-		sock.async_write_some(
-			boost::asio::buffer(msg, max_length),
-			boost::bind(&connection_handler::write,
-				shared_from_this(),
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
-
-		sock.async_read_some(
-			boost::asio::buffer(data, max_length),
-			boost::bind(&connection_handler::read,
-				shared_from_this(),
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
-
+	std::string msg;
+	{
+		std::lock_guard<std::mutex> lg(*sendMutex);
+		msg = *senMsg + "\n";
 	}
-	
+	sock.async_write_some(
+		boost::asio::buffer(msg, max_length),
+		boost::bind(&connection_handler::write,
+			shared_from_this(),
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred));
+
+	sock.async_read_some(
+		boost::asio::buffer(data, max_length),
+		boost::bind(&connection_handler::read,
+			shared_from_this(),
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred));
+
+
 }
 
 void connection_handler::read(const boost::system::error_code& err, size_t bytes_transferred)
@@ -142,7 +150,7 @@ void connection_handler::read(const boost::system::error_code& err, size_t bytes
 
 void connection_handler::write(const boost::system::error_code& err, size_t bytes_transferred)
 {
-	
+
 	if (err) {
 		std::cout << "Server send failed: " << err.message() << std::endl;
 	}
