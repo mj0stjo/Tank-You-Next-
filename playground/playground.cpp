@@ -154,8 +154,10 @@ int main(void)
 	
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
-	netMngr->startServer();
-	//netMngr->startClient("192.168.53.32");
+	if (ip == "server")
+		netMngr->startServer();
+	else
+		netMngr->startClient(ip);
 
 	//start animation loop until escape key is pressed
 	do {
