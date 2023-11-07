@@ -1,4 +1,6 @@
+#pragma comment(lib, "winmm.lib")
 #include "playground.h"
+
 
 // Include standard headers
 #include <stdio.h>
@@ -34,6 +36,10 @@ using namespace glm;
 #include <sstream>
 #include <unordered_map>
 
+
+#include<mmsystem.h>
+
+
 std::vector<std::shared_ptr<Tank>> networkTanks;
 std::vector<std::shared_ptr<GameObject>> obstacles;
 std::shared_ptr<Tank>  mainTank;
@@ -45,6 +51,17 @@ std::shared_ptr<NetworkManager> netMngr;
 
 int main(void)
 {
+
+	// Play sound
+	//PlaySound(TEXT("../sound/pickup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
+	//mciSendString("open \"../sound/music.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+	//mciSendString("play mp3 repeat", NULL, 0, NULL);
+	
+	// play a second sound
+	//PlaySound(TEXT("../sound/ambient.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+
+	
 	// read from config.txt
 	std::ifstream configFile("../config.txt");
 	std::string line;
@@ -104,9 +121,9 @@ int main(void)
 	networkTanks.push_back(std::make_shared<Tank>(programID, "../models/base.stl", "../models/kuppel.stl", "../models/rohr.stl"));
 	
 	std::shared_ptr<GameObject> grd = std::make_shared<Ground>(ground, "../models/ground.stl");
-	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 100.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
+	std::shared_ptr<GameObject> o1 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/benis.png", 100.0f, 2.0f, 0.0f, 10.0f, 10.0f, 1.0f);
 	std::shared_ptr<GameObject> o2 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 70.0f, 2.0f, 0.0f, 10.0f, 10.0f, 10.0f);
-	std::shared_ptr<GameObject> o3 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", -20.0f, 2.0f, 50.0f, 10.0f, 10.0f, 10.0f);
+	std::shared_ptr<GameObject> o3 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/benis.png", -20.0f, 2.0f, 50.0f, 10.0f, 10.0f, 10.0f);
 	std::shared_ptr<GameObject> o4 = std::make_shared<Obstacle>(ground, "../models/rock.stl", "../models/rockTexture.png", 30.0f, 2.0f, -80.0f, 10.0f, 10.0f, 10.0f);
 	obstacles.push_back(grd);
 	obstacles.push_back(o1);
