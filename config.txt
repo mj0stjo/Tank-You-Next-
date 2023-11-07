@@ -1,4 +1,4 @@
 tankColorR=0.4
 tankColorG=0.6
 tankColorB=0.9
-ip=192.168.53.32
+ip=server

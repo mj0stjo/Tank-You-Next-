@@ -150,7 +150,7 @@ void connection_handler::read() {
 		for (int i = 0; i < senArr->size(); i++) {
 			*resMsg += (*senArr).at(i) + "X";
 		}
-		std::cout << "Server received message from Client:" << *resMsg << std::endl;
+		
 
 	}
 }
@@ -172,6 +172,6 @@ void connection_handler::write() {
 		std::cout << "Server send failed: " << error.message() << std::endl;
 	}
 	else {
-		std::cout << "Server sent message to Client!" << std::endl;
+		
 	}
 }

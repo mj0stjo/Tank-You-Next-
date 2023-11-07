@@ -26,6 +26,7 @@ class GameObject {
 		std::shared_ptr<ColliderSphere> getColliderSphere();
 		std::string getName();
 		GLuint getProgrammId();
+		void setName(std::string newName);
 	protected:
 		std::string name;
 		std::shared_ptr<ColliderSphere> colliderSphere;

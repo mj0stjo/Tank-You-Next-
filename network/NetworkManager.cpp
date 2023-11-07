@@ -40,11 +40,21 @@ void NetworkManager::synchronize() {
 		+ " " + std::to_string(localTank->getRotation().x) + " " + std::to_string(localTank->getRotation().y) + " " + std::to_string(localTank->getRotation().z)
 		+ " " + std::to_string(localTank->getKupelRotation().x) + " " + std::to_string(localTank->getKupelRotation().y) + " " + std::to_string(localTank->getKupelRotation().z);
 
-	if (localTank->lastBullet != nullptr) {
-		localStr += "B" + std::to_string(localTank->lastBullet->position.x) + " " + std::to_string(localTank->lastBullet->position.y) + " " + std::to_string(localTank->lastBullet->position.z) + " " + 
-			std::to_string(localTank->lastBullet->direction.x) + " " + std::to_string(localTank->lastBullet->direction.y) + " " + std::to_string(localTank->lastBullet->direction.z);
-		localTank->lastBullet = nullptr;
+	// get all local bullets
+	std::vector<std::shared_ptr<Bullet>> localBullets = ObjectPool::getLocalBullets();
+
+	for (int i = 0; i < localBullets.size(); i++) {
+
+		std::string nameid = localBullets[i]->getName();
+		// make substring of nameid cut out "localBullet"
+		nameid = nameid.substr(11, nameid.length() - 1);
+
+	
+
+		localStr += "B" + std::to_string(localBullets[i]->position.x) + " " + std::to_string(localBullets[i]->position.y) + " " + std::to_string(localBullets[i]->position.z) + " " +
+			std::to_string(localBullets[i]->direction.x) + " " + std::to_string(localBullets[i]->direction.y) + " " + std::to_string(localBullets[i]->direction.z) + " " +nameid;
 	}
+
 
 	{
 		std::lock_guard<std::mutex> lg(*localTankMutex);
@@ -56,7 +66,6 @@ void NetworkManager::synchronize() {
 		std::lock_guard<std::mutex> lg(*remoteTankMutex);
 		remoteStr = *remoteTankMsg;
 	}
-
 
 	if (!remoteStr.empty()) {
 		std::vector<std::string> tanks;
@@ -76,16 +85,41 @@ void NetworkManager::synchronize() {
 			networkTanks[i]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
 
 			if (posAndBul.size() > 1) {
-				std::vector<std::string> bul;
-				boost::split(bul, posAndBul[1], boost::is_any_of(" "), boost::token_compress_on);
 
-				float bulletSpeed = 60.0f;
-				int bulletDamage = 10;
-				GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
+				for (int j = 1; j < posAndBul.size(); j++) {
+						
+					std::vector<std::string> bul;
+					boost::split(bul, posAndBul[j], boost::is_any_of(" "), boost::token_compress_on);
 
-				std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, glm::vec3(std::stof(bul[3]), std::stof(bul[4]), std::stof(bul[5])), glm::vec3(std::stof(bul[0]), std::stof(bul[1]), std::stof(bul[2])), bulletShaderID, "../models/monke.stl", "localBullet");
-				ObjectPool::addGameObject(bullet);
-				std::cout << "Spawned a bullet" << std::endl;
+					float bulletSpeed = 60.0f;
+					int bulletDamage = 10;
+					
+
+					// id is in bul[6]
+					std::string bulletName = "netBullet" + std::to_string(i) + "X" + bul[6];
+					
+
+					// if bullet is already in object pool, update it
+					if (!ObjectPool::contains(bulletName)) {
+						GLuint bulletShaderID = LoadShaders("../engine/BulletVShader.vertexshader", "../engine/BulletFShader.fragmentshader");
+						std::shared_ptr<Bullet> bullet = std::make_shared<Bullet>(bulletSpeed, bulletDamage, glm::vec3(std::stof(bul[3]), std::stof(bul[4]), std::stof(bul[5])), glm::vec3(std::stof(bul[0]), std::stof(bul[1]), std::stof(bul[2])), bulletShaderID, "../models/monke.stl", bulletName);
+						bullet->setName(bulletName);
+
+						ObjectPool::addGameObject(bullet);
+					}
+					else {
+						std::shared_ptr<Bullet> bulletToUpdate = ObjectPool::getBullet(bulletName);
+
+						bulletToUpdate->direction = glm::vec3(std::stof(bul[3]), std::stof(bul[4]), std::stof(bul[5]));
+						bulletToUpdate->position = glm::vec3(std::stof(bul[0]), std::stof(bul[1]), std::stof(bul[2]));
+						
+						
+					}
+
+					//std::cout << "Net-Bullet " << bulletName << " created" << std::endl;
+					
+				}
+				
 			}
 
 		}
