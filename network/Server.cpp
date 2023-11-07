@@ -47,7 +47,9 @@ void Server::handle_accept(boost::shared_ptr<connection_handler> connection, con
 {
 	if (!err) {
 		std::cout << "New Client connected." << std::endl;
-		connection->start();
+		std::thread([connection]() {
+			connection->start();
+			}).detach();
 	}
 	start_accept();
 }
@@ -113,29 +115,7 @@ tcp::socket& connection_handler::socket()
 
 void connection_handler::start()
 {
-	/*
-	std::string msg;
-	{
-		std::lock_guard<std::mutex> lg(*sendMutex);
-		msg = *senMsg + "\n";
-	}
 
-	boost::asio::async_write(sock, boost::asio::buffer(msg),
-		boost::bind(&connection_handler::write,
-			shared_from_this(),
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
-
-	boost::asio::async_read_until(sock,
-		data,
-		'\n',  
-		boost::bind(&connection_handler::read,
-			shared_from_this(),
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
-*/
-
-	
 	while (true) {
 		//write operation
 		write();
@@ -144,34 +124,6 @@ void connection_handler::start()
 	}
 
 }
-
-/*
-void connection_handler::read(const boost::system::error_code& err, size_t bytes_transferred)
-{
-	if (err) {
-		std::cout << "Server receive failed: " << err.message() << std::endl;
-	}
-	else {
-		std::lock_guard<std::mutex> lg(*readMutex);
-		//std::string dataAsString(boost::asio::buffers_begin(data.data()), boost::asio::buffers_begin(data.data()) + data.size());
-		//*resMsg = dataAsString;
-		std::cout << "Server received message from Client:" << *resMsg << std::endl;
-	}
-}
-
-void connection_handler::write(const boost::system::error_code& err, size_t bytes_transferred)
-{
-
-	if (err) {
-		std::cout << "Server send failed: " << err.message() << std::endl;
-	}
-	else {
-		std::cout << "Server sent message to Client!" << std::endl;
-	}
-}
-*/
-
-
 
 
 void connection_handler::read() {
