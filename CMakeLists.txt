@@ -105,6 +105,7 @@ add_executable(playground
 	engine/obstacle.cpp
 	engine/ui.h
 	engine/ui.cpp
+	config.txt
 )
 target_link_libraries(playground
 	${ALL_LIBS}
