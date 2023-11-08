@@ -12,6 +12,10 @@
 #include "network/Client.h"
 #include "engine/tank.h"
 #include "engine/GameObject.h"
+#include "engine/objectpool.h"
+
+
+#include <common/shader.hpp>
 
 class NetworkManager {
 private:

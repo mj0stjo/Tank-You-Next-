@@ -27,7 +27,6 @@ void Client::read() {
 		const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
 		std::lock_guard<std::mutex> lg(*readMutex);
 		*resMsg = data;
-		std::cout << "Client received message from Server:" << *resMsg << std::endl;
 	}
 }
 
@@ -44,7 +43,6 @@ void Client::send() {
 	}
 	else {
 
-		std::cout << "Client sent message to Server!" << std::endl;
 	}
 }
 

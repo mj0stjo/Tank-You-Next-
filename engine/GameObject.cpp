@@ -16,6 +16,10 @@ std::string GameObject::getName() {
 	return name; 
 }
 
+void GameObject::setName(std::string newName) {
+	name = newName;
+}
+
 bool GameObject::isDestroyed() {
 	return destroyedFlag;
 }

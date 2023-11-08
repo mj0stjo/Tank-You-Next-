@@ -374,8 +374,6 @@ void initalizeVPTransformationUi(GLuint progID, bool dest) {
 	GLuint viewMatrixID = glGetUniformLocation(progID, "view");
 	GLuint projectionMatrixID = glGetUniformLocation(progID, "projection");
 
-	std::cout << "other ids " << matrixID << ", "<< viewMatrixID << std::endl;
-
 	GLuint isDestroyedFlag = glGetUniformLocation(progID, "isDestroyed");
 	glUniform1i(isDestroyedFlag, dest);
 	
