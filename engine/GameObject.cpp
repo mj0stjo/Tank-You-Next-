@@ -4,7 +4,7 @@
 GameObject::GameObject(GLuint programID, std::string name)
 {
 	this->programID = programID;
-    this->colliderSphere = std::make_shared<ColliderSphere>(6.0f);
+    this->colliderSphere = std::make_shared<ColliderSphere>(8.0f);
     this->name = name;
 }
 

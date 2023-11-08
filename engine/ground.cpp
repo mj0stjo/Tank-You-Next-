@@ -30,9 +30,9 @@ void Ground::update(float deltaTime) {
 	model = glm::rotate(model, rotation.z, glm::vec3(0.0f,0.0f, 1.0f));
 	
 	glm::mat4 transformation;//additional transformation for the model
-	transformation[0][0] = 20.0; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
+	transformation[0][0] = 30.0; transformation[1][0] = 0.0; transformation[2][0] = 0.0; transformation[3][0] = position.x;
 	transformation[0][1] = 0.0; transformation[1][1] = 1.0; transformation[2][1] = 0.0; transformation[3][1] = position.y;
-	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 20.0; transformation[3][2] = position.z;
+	transformation[0][2] = 0.0; transformation[1][2] = 0.0; transformation[2][2] = 30.0; transformation[3][2] = position.z;
 	transformation[0][3] = 0.0; transformation[1][3] = 0.0; transformation[2][3] = 0.0; transformation[3][3] = 1.0;
 	
 	
