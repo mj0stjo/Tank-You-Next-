@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <windows.h>
 
 Bullet::Bullet(float speed, int damage, glm::vec3 direction, glm::vec3 startPos, GLuint programID, std::string stlPath, std::string name) : GameObject(programID, name)
 {
@@ -93,6 +94,19 @@ bool Bullet::onCollissionEnter(std::shared_ptr<GameObject> collissionObj)
 		if (lifeTime < 4.6f)
 			lifeTime = 4.6f;
 	}
+
+	if (name == "tank") {
+
+		PlaySound(TEXT("../sound/destroy.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		// Check if the tank has been hit by a local bullet
+		if (this->getName().find("localBullet") != std::string::npos) {
+			// Handle the case where a tank is hit by a local bullet
+			this->destroyedFlag = true;
+			return true;
+			// Additional code to handle the collision...
+		}
+	}
+
 
 	return false;
 }

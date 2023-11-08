@@ -9,7 +9,7 @@
 #include "objectpool.h"
 #include <common/shader.hpp>
 #include <random>
-
+#include <chrono>
 #include<windows.h>
 
 
@@ -33,6 +33,16 @@ Tank::~Tank() {
 }
 
 void Tank::update(float deltaTime) {
+
+	if (destroyed) {
+		destroyedTimer -= deltaTime;
+		if (destroyedTimer < 0.0f) {
+			setPosition(glm::vec3(0.0f, -100.0f, 0.0f));
+		}
+
+		return;
+	}
+
 
 	glUseProgram(programID);
 	
@@ -343,11 +353,15 @@ bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 	if (name.find("netBullet") != std::string::npos) {
 		
 		destroyed = true;
+		noobTimes += 1;
 		return true;
 	}
 
-	if(destroyed)
+	if (destroyed) {
+		destroyedTimer = 0.5f;
+	
 		PlaySound(TEXT("../sound/destroy.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	}
 	
 	
 	return false;
@@ -395,6 +409,10 @@ void Tank::respawn() {
 	setDestroyed(false);
 
 	std::default_random_engine generator;
+
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	generator.seed(seed);
+
 	std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 	
 	// create random position

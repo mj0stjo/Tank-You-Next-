@@ -26,6 +26,7 @@ public:
 
 	std::shared_ptr<Bullet> lastBullet;
 private:
+	float destroyedTimer;
 	int noobTimes;
 	glm::vec3 color;
 	GLuint vaoID;
