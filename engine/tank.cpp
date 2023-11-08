@@ -1,3 +1,4 @@
+
 #include "tank.h"
 #include "GameObject.h"
 #include <iostream>
@@ -8,6 +9,9 @@
 #include "objectpool.h"
 #include <common/shader.hpp>
 #include <random>
+
+#include<windows.h>
+
 
 
 Tank::Tank(GLuint programmID, std::string baseStl, std::string kuppelStl, std::string rohr):GameObject(programmID, "tank") {
@@ -59,6 +63,11 @@ void Tank::update(float deltaTime) {
 
 		ObjectPool::addGameObject(bullet);
 		reloadTime = 1.1f;
+
+		// Play sound
+		PlaySound(TEXT("../sound/shoot.wav"), NULL, SND_ASYNC | SND_FILENAME);
+
+		
 		//std::cout << "Spawned a bullet" << std::endl;
 
 	//	std::cout << "Bullet: " << bullet->getName() << std::endl;
@@ -336,6 +345,9 @@ bool Tank::onCollissionEnter(std::shared_ptr<GameObject> collissionObj) {
 		destroyed = true;
 		return true;
 	}
+
+	if(destroyed)
+		PlaySound(TEXT("../sound/destroy.wav"), NULL, SND_FILENAME | SND_ASYNC);
 	
 	
 	return false;

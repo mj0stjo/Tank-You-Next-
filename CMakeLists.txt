@@ -106,8 +106,9 @@ add_executable(playground
 	engine/ui.h
 	engine/ui.cpp
 	config.txt
-	#sound/pickup.wav
-	#sound/music.mp3
+	sound/shoot.wav
+	sound/music.mp3
+	sound/destroy.wav
 	models/benis.png
 )
 target_link_libraries(playground

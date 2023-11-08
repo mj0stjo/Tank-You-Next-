@@ -55,8 +55,8 @@ int main(void)
 	// Play sound
 	//PlaySound(TEXT("../sound/pickup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
-	//mciSendString("open \"../sound/music.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
-	//mciSendString("play mp3 repeat", NULL, 0, NULL);
+	mciSendString("open \"../sound/music.mp3\" type mpegvideo alias mp3", NULL, 0, NULL);
+	mciSendString("play mp3 repeat", NULL, 0, NULL);
 	
 	// play a second sound
 	//PlaySound(TEXT("../sound/ambient.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
@@ -225,6 +225,7 @@ void updateAnimationLoop()
 	}
 
 	if (!mainTank->getDestroyed()) {
+		
 		mainTank->update(deltaTime);
 		initalizeVPTransformation(mainTank->getProgrammId());
 		mainTank->render();
