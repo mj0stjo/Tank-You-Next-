@@ -30,12 +30,13 @@ You can download the binaries of the latest release [here](https://github.com/mj
 - Settings (`Tank-You-Next-/config.txt`):
     - RGB value for tank
     - IP
-        - `<IP to connect to>`(Client-Mode)
+        - `<IP to connect to>` (Client-Mode)
         - `server` (Server-Mode)
 - Starting:
     - Start the `launch` script.
 
 ## 4. Notes
-Theoretically it should be possible to play with up to 12 players. However, in local resting there were errors when playing with more than 7 players.
+Theoretically it should be possible to play with up to 12 players. However, in local testing there occured errors when playing with more than 7 players.
 
 ## 5. Licence
+TBD
