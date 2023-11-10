@@ -49,9 +49,18 @@ void Server::handle_accept(boost::shared_ptr<connection_handler> connection, con
 {
 	if (!err) {
 		std::cout << "New Client connected." << std::endl;
-		std::thread([connection]() {
-			connection->start();
-			}).detach();
+
+		if (clientCount < 3) {
+			std::thread([connection]() {
+				connection->start();
+				}).detach();
+		}
+		else {
+			std::thread([connection]() {
+				connection->start();
+				}).join();
+		}
+		
 	}
 	start_accept();
 }

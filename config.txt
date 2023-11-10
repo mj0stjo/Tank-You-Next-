@@ -1,4 +1,4 @@
-tankColorR=0.4
-tankColorG=0.6
-tankColorB=0.9
-ip=server
+tankColorR=0.9
+tankColorG=0.1
+tankColorB=0.1
+ip=10.32.18.209
