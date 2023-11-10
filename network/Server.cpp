@@ -50,7 +50,7 @@ void Server::handle_accept(boost::shared_ptr<connection_handler> connection, con
 	if (!err) {
 		std::cout << "New Client connected." << std::endl;
 
-		if (clientCount < 3) {
+		if (clientCount < 2) {
 			std::thread([connection]() {
 				connection->start();
 				}).detach();
