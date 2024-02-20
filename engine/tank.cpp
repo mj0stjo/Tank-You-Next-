@@ -52,6 +52,16 @@ void Tank::update(float deltaTime) {
 		position.y -= speed * deltaTime * 3.0f;
 	}
 
+	int box = 270;
+
+	// destroy tank if too far away (box is 100x and 100z)
+	if (position.x < -box || position.x > box || position.z < -box || position.z > box) {
+		destroyed = true;
+		noobTimes += 1;
+		destroyedTimer = 0.5f;
+		PlaySound(TEXT("../sound/destroy.wav"), NULL, SND_FILENAME | SND_ASYNC);
+	}
+
 	
 
 	if (KeyboardInput::IsPressed('_') && reloadTime <= 0) {
