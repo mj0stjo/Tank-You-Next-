@@ -164,7 +164,6 @@ void connection_handler::read() {
 			
 		*resMsg = "";
 
-		std::cout << data << std::endl;
 		for (int i = 0; i < senArr->size(); i++) {
 			*resMsg += (*senArr).at(i) + "\nX";
 		}
