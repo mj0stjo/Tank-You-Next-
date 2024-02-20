@@ -29,7 +29,7 @@ private:
     std::shared_ptr <std::mutex> remoteTankMutex;
 public:
     NetworkManager(std::shared_ptr<Tank>  localTank, std::vector<std::shared_ptr<Tank>> networkTanks);
-    void startServer();
+    void startServer(int maxClient);
     void startClient(std::string ip);
     void synchronize();
 };

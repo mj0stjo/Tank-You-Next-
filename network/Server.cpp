@@ -3,7 +3,8 @@
 // Inspiration: https://www.codeproject.com/Articles/1264257/Socket-Programming-in-Cplusplus-using-boost-asio-T
 
 
-Server::Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service) : acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234)) {
+Server::Server(int maxClient, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service) : acceptor_(io_service, tcp::endpoint(tcp::v4(), 1234)) {
+	this->maxClient = maxClient;
 	this->senMsg = senMsg;
 	this->resMsg = resMsg;
 	this->readMutex = readMutex;
@@ -50,7 +51,7 @@ void Server::handle_accept(boost::shared_ptr<connection_handler> connection, con
 	if (!err) {
 		std::cout << "New Client connected." << std::endl;
 
-		if (clientCount < 2) {
+		if (clientCount < this->maxClient) {
 			std::thread([connection]() {
 				connection->start();
 				}).detach();

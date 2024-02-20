@@ -36,6 +36,7 @@ public:
 
 class Server {
 private:
+    int maxClient;
     std::shared_ptr<tcp::acceptor> acceptor;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::vector<std::string>> senArr;
@@ -49,7 +50,7 @@ private:
     void start_accept();
     void handle_accept(boost::shared_ptr<connection_handler> connection, const boost::system::error_code& err);
 public:
-    Server(std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service);
+    Server(int maxClient, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, boost::asio::io_service& io_service);
 };
 
 #endif

@@ -10,11 +10,11 @@ NetworkManager::NetworkManager(std::shared_ptr<Tank>  localTank, std::vector<std
 	std::cout << "Initialized NetworkManager" << std::endl;
 }
 
-void NetworkManager::startServer() {
+void NetworkManager::startServer(int maxClient) {
 	try {
 		serverThread = std::make_shared<std::thread>([&] {
 			 boost::asio::io_service io_service;
-			 Server s{ localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex, io_service };
+			 Server s{ maxClient, localTankMsg, remoteTankMsg, remoteTankMutex, localTankMutex, io_service };
 			 io_service.run();
 			});
 	}

@@ -93,6 +93,7 @@ int main(void)
 	);
 	
 	std::string ip = config["ip"];
+	int maxClient = std::stoi(config["maxClient"]);
 
 	
 	
@@ -171,7 +172,7 @@ int main(void)
 	//Initialize Network
 	netMngr = std::make_shared<NetworkManager>(mainTank, networkTanks);
 	if (ip == "server")
-		netMngr->startServer();
+		netMngr->startServer(maxClient);
 	else
 		netMngr->startClient(ip);
 
