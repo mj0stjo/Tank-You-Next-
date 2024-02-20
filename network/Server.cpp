@@ -1,4 +1,7 @@
 #include "Server.h"
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+using namespace std::chrono_literals;
 
 // Inspiration: https://www.codeproject.com/Articles/1264257/Socket-Programming-in-Cplusplus-using-boost-asio-T
 
@@ -148,7 +151,10 @@ void connection_handler::read() {
 		std::cout << "Server receive failed: " << error.message() << std::endl;
 	}
 	else {
-		std::string data = boost::asio::buffer_cast<const char*>(buf.data());
+		std::string data_raw = boost::asio::buffer_cast<const char*>(buf.data());
+		std::vector<std::string> data_arr;
+        boost::split(data_arr, data_raw, boost::is_any_of("\n"), boost::token_compress_on);
+		std::string data = data_arr[0];
 		std::lock_guard<std::mutex> lg(*readMutex);
 
 		if (senArr->size() <= id)
@@ -157,10 +163,11 @@ void connection_handler::read() {
 			senArr->at(id) = data;
 			
 		*resMsg = "";
+
+		std::cout << data << std::endl;
 		for (int i = 0; i < senArr->size(); i++) {
-			*resMsg += (*senArr).at(i) + "X";
+			*resMsg += (*senArr).at(i) + "\nX";
 		}
-		
 
 	}
 }
