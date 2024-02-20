@@ -1,5 +1,5 @@
 tankColorR=0.9
-tankColorG=0.1
+tankColorG=0.9
 tankColorB=0.1
-ip=server
+ip=141.59.132.100
 maxClient=10

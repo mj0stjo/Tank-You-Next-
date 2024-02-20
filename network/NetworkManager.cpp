@@ -38,7 +38,8 @@ void NetworkManager::synchronize() {
 	//Update position of local tank
 	std::string localStr = std::to_string(localTank->getPosition().x) + " " + std::to_string(localTank->getPosition().y) + " " + std::to_string(localTank->getPosition().z) 
 		+ " " + std::to_string(localTank->getRotation().x) + " " + std::to_string(localTank->getRotation().y) + " " + std::to_string(localTank->getRotation().z)
-		+ " " + std::to_string(localTank->getKupelRotation().x) + " " + std::to_string(localTank->getKupelRotation().y) + " " + std::to_string(localTank->getKupelRotation().z);
+		+ " " + std::to_string(localTank->getKupelRotation().x) + " " + std::to_string(localTank->getKupelRotation().y) + " " + std::to_string(localTank->getKupelRotation().z)
+		+ " " + std::to_string(localTank->getColor().x) + " " + std::to_string(localTank->getColor().y) + " " + std::to_string(localTank->getColor().z);
 
 	// get all local bullets
 	std::vector<std::shared_ptr<Bullet>> localBullets = ObjectPool::getLocalBullets();
@@ -83,6 +84,14 @@ void NetworkManager::synchronize() {
 			networkTanks[i]->setPosition(glm::vec3(std::stof(vec[0]), std::stof(vec[1]), std::stof(vec[2])));
 			networkTanks[i]->setRotation(glm::vec3(std::stof(vec[3]), std::stof(vec[4]), std::stof(vec[5])));
 			networkTanks[i]->setKupelRotation(glm::vec3(std::stof(vec[6]), std::stof(vec[7]), std::stof(vec[8])));
+
+			glm::vec3 color = glm::vec3(
+				std::stof(vec[9]),
+				std::stof(vec[10]),
+				std::stof(vec[11])
+			);
+
+			networkTanks[i]->setColor(color);
 
 			if (posAndBul.size() > 1) {
 
