@@ -19,6 +19,7 @@ private:
     std::string ip;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
+    int sentBullets = 0;
     void read();
     void send();
     void loop();
