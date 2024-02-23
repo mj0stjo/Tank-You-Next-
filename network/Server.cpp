@@ -171,7 +171,8 @@ void connection_handler::read() {
 		*resMsg = "";
 
 		for (int i = 0; i < senArr->size(); i++) {
-			*resMsg += (*senArr).at(i) + "\nX";
+			if(i == senArr->size()-1) *resMsg += (*senArr).at(i) + " ";
+			else *resMsg += (*senArr).at(i) + "\nX";
 		}
 
 		*resMsg += bullets;
