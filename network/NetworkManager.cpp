@@ -116,16 +116,6 @@ void NetworkManager::synchronize() {
 
 						ObjectPool::addGameObject(bullet);
 					}
-					else {
-						std::shared_ptr<Bullet> bulletToUpdate = ObjectPool::getBullet(bulletName);
-
-						bulletToUpdate->direction = glm::vec3(std::stof(bul[3]), std::stof(bul[4]), std::stof(bul[5]));
-						bulletToUpdate->position = glm::vec3(std::stof(bul[0]), std::stof(bul[1]), std::stof(bul[2]));
-						
-						
-					}
-
-					//std::cout << "Net-Bullet " << bulletName << " created" << std::endl;
 					
 				}
 				

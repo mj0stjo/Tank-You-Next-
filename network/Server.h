@@ -20,13 +20,14 @@ private:
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::vector<std::string>> senArr;
+    std::shared_ptr<std::vector<std::string>> bulArr;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;
 
 public:
-    connection_handler(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
+    connection_handler(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::vector<std::string>> bulArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     // creating the pointer
-    static boost::shared_ptr<connection_handler> create(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
+    static boost::shared_ptr<connection_handler> create(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::vector<std::string>> bulArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec);
     //socket creation
     tcp::socket& socket();
     void start();
@@ -40,6 +41,7 @@ private:
     std::shared_ptr<tcp::acceptor> acceptor;
     std::shared_ptr<std::string> senMsg;
     std::shared_ptr<std::vector<std::string>> senArr;
+    std::shared_ptr<std::vector<std::string>> bulArr;
     std::shared_ptr<std::string> resMsg;
     std::shared_ptr<std::mutex> readMutex;
     std::shared_ptr<std::mutex> sendMutex;

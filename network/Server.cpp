@@ -1,6 +1,8 @@
 #include "Server.h"
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <chrono>
+#include <thread>
 using namespace std::chrono_literals;
 
 // Inspiration: https://www.codeproject.com/Articles/1264257/Socket-Programming-in-Cplusplus-using-boost-asio-T
@@ -14,24 +16,7 @@ Server::Server(int maxClient, std::shared_ptr<std::string> senMsg, std::shared_p
 	this->sendMutex = sendMutex;
 
 	this->senArr = std::make_shared<std::vector<std::string>>();
-
-
-	/*
-	boost::asio::io_service io_service;
-	//listen for new connection
-	acceptor = std::make_shared<tcp::acceptor>(io_service, tcp::endpoint(tcp::v4(), 1234));
-	//socket creation
-	sock = std::make_shared<tcp::socket>(io_service);
-
-	std::cout << "Initialized Server" << std::endl;
-
-	//waiting for connection
-	acceptor->accept(*sock);
-
-	std::cout << "Started server" << std::endl;
-
-	loop();
-	*/
+	this->bulArr = std::make_shared<std::vector<std::string>>();
 
 	std::cout << "Initialized Server" << std::endl;
 	start_accept();
@@ -41,7 +26,7 @@ Server::Server(int maxClient, std::shared_ptr<std::string> senMsg, std::shared_p
 void Server::start_accept()
 {
 	// socket
-	boost::shared_ptr<connection_handler> connection = connection_handler::create(clientCount++, senMsg, resMsg, senArr, readMutex, sendMutex, acceptor_.get_executor());
+	boost::shared_ptr<connection_handler> connection = connection_handler::create(clientCount++, senMsg, resMsg, senArr, bulArr, readMutex, sendMutex, acceptor_.get_executor());
 
 	// asynchronous accept operation and wait for a new connection.
 	acceptor_.async_accept(connection->socket(),
@@ -53,6 +38,7 @@ void Server::handle_accept(boost::shared_ptr<connection_handler> connection, con
 {
 	if (!err) {
 		std::cout << "New Client connected." << std::endl;
+		this->bulArr->push_back("");
 
 		if (clientCount < this->maxClient) {
 			std::thread([connection]() {
@@ -111,18 +97,19 @@ void Server::loop() {
 }
 */
 
-connection_handler::connection_handler(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec) : sock(exec) {
+connection_handler::connection_handler(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::vector<std::string>> bulArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec) : sock(exec) {
 	this->id = id;
 	this->senMsg = senMsg;
 	this->resMsg = resMsg;
 	this->readMutex = readMutex;
 	this->sendMutex = sendMutex;
 	this->senArr = senArr;
+	this->bulArr = bulArr;
 }
 
-boost::shared_ptr<connection_handler> connection_handler::create(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec)
+boost::shared_ptr<connection_handler> connection_handler::create(int id, std::shared_ptr<std::string> senMsg, std::shared_ptr<std::string> resMsg, std::shared_ptr<std::vector<std::string>> senArr, std::shared_ptr<std::vector<std::string>> bulArr, std::shared_ptr<std::mutex> readMutex, std::shared_ptr<std::mutex> sendMutex, const boost::asio::any_io_executor exec)
 {
-	return boost::shared_ptr<connection_handler>(new connection_handler(id, senMsg, resMsg, senArr, readMutex, sendMutex, exec));
+	return boost::shared_ptr<connection_handler>(new connection_handler(id, senMsg, resMsg, senArr, bulArr, readMutex, sendMutex, exec));
 }
 
 tcp::socket& connection_handler::socket()
@@ -155,18 +142,50 @@ void connection_handler::read() {
 		std::vector<std::string> data_arr;
         boost::split(data_arr, data_raw, boost::is_any_of("\n"), boost::token_compress_on);
 		std::string data = data_arr[0];
+
+
+		std::vector<std::string> posbul_arr;
+		boost::split(posbul_arr, data, boost::is_any_of("B"), boost::token_compress_on);
+		std::string pos = posbul_arr[0];
+
+
 		std::lock_guard<std::mutex> lg(*readMutex);
 
+
 		if (senArr->size() <= id)
-			senArr->push_back(data);
+			senArr->push_back(pos);
 		else
-			senArr->at(id) = data;
-			
+			senArr->at(id) = pos;
+
+		std::string bullets = "";
+
+		for (int j = 1; j < posbul_arr.size(); j++) {
+			bullets += "B" + posbul_arr.at(j);
+		}
+
+		for (int i = 0; i < bulArr->size(); i++) {
+			if (i == id) continue;
+			bulArr->at(i) += bullets;
+		}
+
 		*resMsg = "";
 
 		for (int i = 0; i < senArr->size(); i++) {
 			*resMsg += (*senArr).at(i) + "\nX";
 		}
+
+		*resMsg += bullets;
+
+		for (int i = 0; i < senArr->size(); i++) {
+			std::cout << senArr->at(i) << std::endl;
+		}
+		std::cout << "~~~~~" << std::endl;
+		for (int i = 0; i < bulArr->size(); i++) {
+			std::cout << bulArr->at(i) << std::endl;
+		}
+		std::cout << "---------------" << std::endl;
+
+		std::this_thread::sleep_for(500ms);
 
 	}
 }
@@ -180,7 +199,11 @@ void connection_handler::write() {
 			if (i == id) continue;
 			msg += "X" + (*senArr).at(i);
 		}
+
+		msg += bulArr->at(id);
 		msg += "\n";
+
+		bulArr->at(id) = "";
 	}
 	boost::system::error_code error;
 	boost::asio::write(sock, boost::asio::buffer(msg), error);
